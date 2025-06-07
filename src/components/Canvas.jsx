@@ -42,7 +42,7 @@ const Canvas = ({ onClose }) => {
   };
 
   return (
-    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-2">
+    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-2 w-200">
       {/* Close button */}
       <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">

@@ -1,18 +1,32 @@
-import React, { useState } from "react";
-import { Calendar, Clock } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Calendar, Clock, SquareX } from "lucide-react";
 import { DateTime } from "luxon";
 
 const allTimeZones = Intl.supportedValuesOf("timeZone");
 
-const TimeZoneConverter = ({ playClickSound }) => {
+const TimeZoneConverter = ({ onClose }) => {
   const [convertFromZone, setConvertFromZone] = useState("");
   const [convertToZone, setConvertToZone] = useState("");
   const [inputDate, setInputDate] = useState("");
   const [inputTime, setInputTime] = useState("");
   const [convertedOutput, setConvertedOutput] = useState("");
 
+  const closeSoundRef = useRef(null);
+  const clickSoundRef = useRef(null);
+
+  const [isClosing, setIsClosing] = useState(false);
+  const [visible, setVisible] = useState(true);
+
   const handleConvert = () => {
-    if (!inputDate || !inputTime || !convertFromZone || !convertToZone) return;
+    if (clickSoundRef.current) {
+      clickSoundRef.current.currentTime = 0;
+      clickSoundRef.current.play().catch(() => {});
+    }
+
+    if (!inputDate || !inputTime || !convertFromZone || !convertToZone) {
+      setConvertedOutput("Please fill in all fields before converting.");
+      return;
+    }
 
     try {
       const dateTimeStr = `${inputDate}T${inputTime}`;
@@ -20,6 +34,12 @@ const TimeZoneConverter = ({ playClickSound }) => {
       const fromDateTime = DateTime.fromISO(dateTimeStr, {
         zone: convertFromZone,
       });
+
+      if (!fromDateTime.isValid) {
+        setConvertedOutput("Invalid date/time or time zone.");
+        return;
+      }
+
       const toDateTime = fromDateTime.setZone(convertToZone);
 
       setConvertedOutput(
@@ -35,10 +55,57 @@ const TimeZoneConverter = ({ playClickSound }) => {
     }
   };
 
+  const handleClose = () => {
+    if (closeSoundRef.current) {
+      closeSoundRef.current.currentTime = 0;
+      closeSoundRef.current.play();
+    }
+    setIsClosing(true);
+    setTimeout(() => {
+      setVisible(false);
+      if (onClose) onClose();
+    }, 150);
+  };
+
+  if (!visible) return null;
+
   return (
-    <div className="card card-border bg-base-100 w-96">
-         <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">Time Zone Converter</h1>
-      <div className="flex gap-2 mb-2 relative">
+    <div
+      className={`card card-border bg-base-100 w-96 p-6 relative shadow-xl shadow-neutral-950/50 text-base-content
+        ${isClosing ? "opacity-0" : "opacity-100"}
+      `}
+      style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
+    >
+      {/* Close Button */}
+      <div className="absolute top-0 right-0 m-2 z-10">
+        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
+          <button
+            className="cursor-pointer text-red-500 hover:text-red-700"
+            onClick={handleClose}
+            aria-label="Close Time Zone Converter"
+          >
+            <SquareX className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      {/* Sounds */}
+      <audio
+        ref={closeSoundRef}
+        src="/sounds/notebook-close-83836.mp3"
+        preload="auto"
+      />
+      <audio
+        ref={clickSoundRef}
+        src="/sounds/mouse-click-sound.mp3"
+        preload="auto"
+      />
+
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
+        Time Zone Converter
+      </h1>
+
+      <div className="flex gap-2 mb-4 relative">
         <div className="relative w-1/2">
           <input
             type="date"
@@ -57,7 +124,6 @@ const TimeZoneConverter = ({ playClickSound }) => {
             onChange={(e) => setInputTime(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                playClickSound();
                 handleConvert();
               }
             }}
@@ -66,7 +132,7 @@ const TimeZoneConverter = ({ playClickSound }) => {
         </div>
       </div>
 
-      <div className="flex gap-2 mb-2">
+      <div className="flex gap-2 mb-4">
         <select
           className="select bg-base-300 text-white w-1/2 rounded"
           value={convertFromZone}
@@ -96,10 +162,7 @@ const TimeZoneConverter = ({ playClickSound }) => {
 
       <button
         className="btn btn-secondary shadow-lg shadow-secondary/50 w-full"
-        onClick={() => {
-          playClickSound();
-          handleConvert();
-        }}
+        onClick={handleConvert}
       >
         Convert
       </button>

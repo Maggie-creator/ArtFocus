@@ -17,6 +17,7 @@ function BriefGenerator({ onClose }) {
   const [types, setTypes] = useState([]);
 
   const [error, setError] = useState(null);
+  const [closing, setClosing] = useState(false); // new state for animation
 
   const audioContextRef = useRef(null);
   const closeSoundRef = useRef(null);
@@ -26,7 +27,6 @@ function BriefGenerator({ onClose }) {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     audioContextRef.current = ctx;
 
-    // Load close sound
     fetch("/sounds/notebook-close-83836.mp3")
       .then((res) => res.arrayBuffer())
       .then((buf) => ctx.decodeAudioData(buf))
@@ -35,7 +35,6 @@ function BriefGenerator({ onClose }) {
       })
       .catch(console.error);
 
-    // Load mouse click sound
     fetch("/sounds/mouse-click-sound.mp3")
       .then((res) => res.arrayBuffer())
       .then((buf) => ctx.decodeAudioData(buf))
@@ -74,10 +73,7 @@ function BriefGenerator({ onClose }) {
         return res.json();
       })
       .then((json) => {
-        console.log("Fetched JSON:", json);
-
-        const data = json.briefGenerator || json.sheet1 || []; // check multiple possibilities
-
+        const data = json.briefGenerator || json.sheet1 || [];
         if (!Array.isArray(data) || data.length === 0) {
           throw new Error("No usable data found in response");
         }
@@ -147,17 +143,25 @@ function BriefGenerator({ onClose }) {
     link.click();
   };
 
+  const handleClose = () => {
+    playCloseSound();
+    setClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300); // Match animation duration
+  };
+
   return (
-    <div className="card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4">
-      {/* Close icon */}
+    <div
+      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 transition-opacity duration-300 ${
+        closing ? "opacity-0" : "opacity-100"
+      }`}
+    >
       <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
-            onClick={() => {
-              playCloseSound();
-              onClose();
-            }}
+            onClick={handleClose}
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -167,9 +171,7 @@ function BriefGenerator({ onClose }) {
       <h1 className="text-2xl font-bold text-white text-center mb-4 permanent-marker">
         Brief Generator
       </h1>
-      <p className="text-sm text-white text-center mb-4">
-        Challenge yourself with a new project!
-      </p>
+
       {error && (
         <p className="text-red-400 text-xs text-center mb-2">{error}</p>
       )}
@@ -196,7 +198,9 @@ function BriefGenerator({ onClose }) {
                     to <span className="text-gray-700">{brief.header.to}</span>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">{brief.header.date}</div>
+                <div className="text-xs text-gray-500">
+                  {brief.header.date}
+                </div>
               </div>
               <div className="px-4 py-2 border-b">
                 <h2 className="text-base font-semibold">
@@ -230,70 +234,28 @@ function BriefGenerator({ onClose }) {
                 {brief.colorScheme}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Type:</span> {brief.type}
+                <span className="badge badge-primary">Type:</span>{" "}
+                {brief.type}
               </div>
             </div>
           )}
 
-          <div
-            className={`flex justify-between items-center px-4 py-2 ${
-              viewMode === "email"
-                ? "bg-white border-t border-gray-200"
-                : "bg-base-300"
-            }`}
-          >
-            <div className="space-x-2">
-              <button
-                onClick={copyToClipboard}
-                className={`btn btn-xs ${
-                  viewMode === "email"
-                    ? "bg-white border border-gray-300 text-gray-800 hover:bg-gray-50"
-                    : "btn-outline btn-primary"
-                }`}
-              >
-                <ClipboardCopy className="w-4 h-4 mr-1 inline" />
-                {copied ? "Copied" : "Copy"}
-              </button>
-              <button
-                onClick={exportTXT}
-                className={`btn btn-xs ${
-                  viewMode === "email"
-                    ? "bg-white border border-gray-300 text-gray-800 hover:bg-gray-50"
-                    : "btn-outline btn-primary"
-                }`}
-              >
-                <FileText className="w-4 h-4 mr-1 inline" />
-                .txt
-              </button>
-            </div>
-            <div className="flex space-x-2">
-              <button
-                onClick={() =>
-                  setViewMode(viewMode === "email" ? "summary" : "email")
-                }
-                className={`btn btn-xs ${
-                  viewMode === "email"
-                    ? "bg-white border border-gray-300 text-gray-800 hover:bg-gray-50"
-                    : "btn-outline btn-primary"
-                }`}
-              >
-                <Mail className="w-4 h-4 mr-1 inline" />
-                {viewMode === "email" ? "Summary" : "Email"}
-              </button>
-              <button
-                onClick={() => {
-                  playCloseSound();
-                  setBrief(null);
-                }}
-                className={`btn btn-xs ${
-                  viewMode === "email"
-                    ? "bg-white border border-gray-300 text-red-500 hover:bg-gray-50"
-                    : "btn-outline btn-error"
-                }`}
-              >
-                Close
-              </button>
-            </div>
+          <div className="flex justify-end gap-2 bg-gray-100 px-4 py-2 border-t">
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={() => setViewMode(viewMode === "email" ? "raw" : "email")}
+            >
+              <Mail className="w-4 h-4 mr-1" />
+              {viewMode === "email" ? "Raw View" : "Email View"}
+            </button>
+            <button className="btn btn-sm btn-outline" onClick={copyToClipboard}>
+              <ClipboardCopy className="w-4 h-4 mr-1" />
+              {copied ? "Copied!" : "Copy"}
+            </button>
+            <button className="btn btn-sm btn-outline" onClick={exportTXT}>
+              <FileText className="w-4 h-4 mr-1" />
+              Export
+            </button>
           </div>
         </div>
       )}

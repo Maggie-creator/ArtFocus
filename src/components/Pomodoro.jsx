@@ -1,14 +1,18 @@
 // components/Pomodoro.jsx
 import React, { useState, useEffect, useRef } from "react";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, SquareX } from "lucide-react";
 
-function Pomodoro() {
+function Pomodoro({ onClose }) {
   const [isRunning, setIsRunning] = useState(false);
   const [workDuration, setWorkDuration] = useState(25);
   const [breakDuration, setBreakDuration] = useState(5);
   const [secondsLeft, setSecondsLeft] = useState(workDuration * 60);
   const [isWorkTime, setIsWorkTime] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
+  const [visible, setVisible] = useState(true);
+
   const timerRef = useRef(null);
+  const closeSoundRef = useRef(null);
 
   useEffect(() => {
     setSecondsLeft(workDuration * 60);
@@ -42,8 +46,45 @@ function Pomodoro() {
       .padStart(2, "0")}`;
   };
 
+  const handleClose = () => {
+    if (closeSoundRef.current) {
+      closeSoundRef.current.currentTime = 0;
+      closeSoundRef.current.play();
+    }
+    setIsClosing(true);
+    setTimeout(() => {
+      setVisible(false);
+      onClose();
+    }, 150);
+  };
+
+  if (!visible) return null;
+
   return (
-    <div className="card card-border bg-base-100 w-96 p-4">
+    <div
+      className={`card card-border bg-base-100 w-96 p-4 relative transition-opacity duration-150 ${
+        isClosing ? "opacity-0" : "opacity-100"
+      }`}
+    >
+      {/* Close Button */}
+      <div className="absolute top-0 right-0 m-2">
+        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
+          <button
+            className="cursor-pointer text-red-500 hover:text-red-700"
+            onClick={handleClose}
+          >
+            <SquareX className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      {/* Close Sound */}
+      <audio
+        ref={closeSoundRef}
+        src="/sounds/notebook-close-83836.mp3"
+        preload="auto"
+      />
+
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker">
         {isWorkTime ? "Work Timer" : "Break Timer"}
       </h1>

@@ -5,6 +5,7 @@ import { SquareX } from "lucide-react";
 const YouTubePlayer = ({ onClose }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const closeClickAudioRef = useRef(null);
 
   const handleUrlChange = (event) => {
@@ -20,11 +21,16 @@ const YouTubePlayer = ({ onClose }) => {
       closeClickAudioRef.current.currentTime = 0;
       closeClickAudioRef.current.play();
     }
-    setTimeout(onClose, 150);
+    setIsClosing(true);
+    setTimeout(onClose, 150); // matches transition duration
   };
 
   return (
-    <div className="card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center">
+    <div
+      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center transition-opacity duration-150 ${
+        isClosing ? "opacity-0" : "opacity-100"
+      }`}
+    >
       {/* Audio for close */}
       <audio ref={closeClickAudioRef} src="/sounds/notebook-close-83836.mp3" />
 

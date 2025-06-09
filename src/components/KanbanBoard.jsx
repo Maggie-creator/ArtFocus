@@ -131,7 +131,7 @@ const KanbanBoard = ({ onClose }) => {
     }
     setTimeout(() => {
       onClose();
-    }, 150);
+    }, 150); // Wait a bit so the sound plays
   };
 
   const columns = [
@@ -176,10 +176,12 @@ const KanbanBoard = ({ onClose }) => {
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold text-white mb-4 permanent-marker">
+      <h1 className="text-2xl font-bold text-white text-center mb-4 permanent-marker">
         Kanban Board
       </h1>
-      <p className="text-sm text-white mb-4">Keep track of your projects.</p>
+      <p className="text-sm text-white text-center mb-4">
+        Keep track of your projects.
+      </p>
 
       <div className="flex flex-wrap gap-4 w-full my-4">
         {columns.map(({ key, label, icon }) => (
@@ -276,77 +278,54 @@ const KanbanBoard = ({ onClose }) => {
               }
             />
             <textarea
-              className="textarea textarea-bordered w-full h-24 text-sm text-black mb-3 bg-white"
+              className="textarea textarea-bordered w-full mb-3 text-black bg-white"
               placeholder="Description"
               value={newTaskData.description}
               onChange={(e) =>
                 setNewTaskData({ ...newTaskData, description: e.target.value })
               }
             />
-            <div className="mb-3 flex items-center gap-2">
-              <Flag className="w-4 h-4 text-red-500" />
-              <input
-                type="text"
-                placeholder="Deadline (dd/mm/yyyy)"
-                className="input input-sm input-bordered text-black bg-white w-full"
-                value={newTaskData.deadline}
-                onChange={(e) =>
-                  setNewTaskData({ ...newTaskData, deadline: e.target.value })
-                }
-              />
-            </div>
-            <div className="mb-4 flex gap-2">
-              <div className="w-1/2">
-                <label className="text-sm font-semibold mb-1 block">
-                  Priority
-                </label>
-                <select
-                  className="select select-bordered w-full text-black bg-white"
-                  value={newTaskData.priority}
-                  onChange={(e) =>
-                    setNewTaskData({ ...newTaskData, priority: e.target.value })
-                  }
-                >
-                  <option value="">Select priority</option>
-                  {priorityOptions.map((label) => (
-                    <option key={label} value={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="w-1/2">
-                <label className="text-sm font-semibold mb-1 block">
-                  Status
-                </label>
-                <select
-                  className="select select-bordered w-full text-black bg-white"
-                  value={newTaskData.status}
-                  onChange={(e) =>
-                    setNewTaskData({ ...newTaskData, status: e.target.value })
-                  }
-                >
-                  <option value="">Select status</option>
-                  {statusOptions.map((label) => (
-                    <option key={label} value={label}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+            <input
+              type="date"
+              className="input input-bordered w-full mb-3 text-black bg-white"
+              value={newTaskData.deadline}
+              onChange={(e) =>
+                setNewTaskData({ ...newTaskData, deadline: e.target.value })
+              }
+            />
+            <select
+              className="select select-bordered w-full mb-3 text-black bg-white"
+              value={newTaskData.priority}
+              onChange={(e) =>
+                setNewTaskData({ ...newTaskData, priority: e.target.value })
+              }
+            >
+              <option value="">Select Priority</option>
+              {priorityOptions.map((opt) => (
+                <option key={opt}>{opt}</option>
+              ))}
+            </select>
+            <select
+              className="select select-bordered w-full mb-3 text-black bg-white"
+              value={newTaskData.status}
+              onChange={(e) =>
+                setNewTaskData({ ...newTaskData, status: e.target.value })
+              }
+            >
+              <option value="">Select Status</option>
+              {statusOptions.map((opt) => (
+                <option key={opt}>{opt}</option>
+              ))}
+            </select>
             <div className="modal-action">
+              <button className="btn btn-primary" onClick={addOrUpdateTask}>
+                {isEditing ? "Update" : "Add"}
+              </button>
               <button
-                className="btn btn-sm btn-outline"
+                className="btn btn-outline"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
-              </button>
-              <button
-                className="btn btn-sm btn-primary"
-                onClick={addOrUpdateTask}
-              >
-                {isEditing ? "Update Task" : "Add Task"}
               </button>
             </div>
           </div>

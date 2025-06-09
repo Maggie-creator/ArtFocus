@@ -1,16 +1,19 @@
 // components/TaskTracker.jsx
-import React, { useState, useEffect } from "react";
-import { Trash2 } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Trash2, SquareX } from "lucide-react";
 
-function TaskTracker() {
+function TaskTracker({ onClose }) {
   const [taskInput, setTaskInput] = useState("");
   const [selectedTab, setSelectedTab] = useState("work");
-
   const [tasks, setTasks] = useState({
     work: [],
     personal: [],
     education: [],
   });
+  const [visible, setVisible] = useState(true);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const closeSoundRef = useRef(null);
 
   // Load tasks from localStorage on mount
   useEffect(() => {
@@ -66,12 +69,24 @@ function TaskTracker() {
     }));
   };
 
+  const handleClose = () => {
+    if (closeSoundRef.current) {
+      closeSoundRef.current.currentTime = 0;
+      closeSoundRef.current.play();
+    }
+    setIsClosing(true);
+    setTimeout(() => {
+      setVisible(false);
+      onClose?.();
+    }, 150);
+  };
+
   const renderTabContent = (tabKey) => (
     <>
       <div className="flex mb-4">
         <input
           type="text"
-          className="input input-bordered flex-1 mr-2"
+          className="input input-bordered border-primary flex-1 mr-2"
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
           placeholder="Enter a task..."
@@ -86,7 +101,7 @@ function TaskTracker() {
             key={task.id}
             className={`flex justify-between items-center px-3 py-2 rounded ${
               task.completed
-                ? "bg-success text-white"
+                ? "bg-neutral text-white"
                 : "bg-neutral text-white"
             }`}
           >
@@ -117,7 +132,7 @@ function TaskTracker() {
       {tasks[tabKey].length > 0 && (
         <button
           onClick={deleteAllTasks}
-          className="btn btn-error btn-sm w-full mt-4"
+          className="btn btn-error w-full mt-4"
         >
           Delete All
         </button>
@@ -125,8 +140,38 @@ function TaskTracker() {
     </>
   );
 
+  if (!visible) return null;
+
   return (
-    <div className="card card-border bg-base-100 w-96 p-4">
+    <div
+      className={`relative card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
+        isClosing ? "opacity-0" : "opacity-100"
+      }`}
+      style={{ willChange: "opacity" }}
+    >
+      {/* Close Button */}
+      <div className="absolute top-0 right-0 m-2 z-10">
+        <div
+          className="tooltip tooltip-right tooltip-primary"
+          data-tip="Close"
+        >
+          <button
+            className="cursor-pointer text-red-500 hover:text-red-700"
+            onClick={handleClose}
+            aria-label="Close Task Tracker"
+          >
+            <SquareX className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      {/* Close Sound */}
+      <audio
+        ref={closeSoundRef}
+        src="/sounds/notebook-close-83836.mp3"
+        preload="auto"
+      />
+
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker">
         To-Do List
       </h1>
@@ -136,7 +181,9 @@ function TaskTracker() {
         <input
           type="radio"
           name="my_tabs_3"
-          className={`tab ${selectedTab === "work" ? "tab-active border-primary" : ""}`}
+          className={`tab ${
+            selectedTab === "work" ? "tab-active border-primary" : ""
+          }`}
           aria-label="Work"
           checked={selectedTab === "work"}
           onChange={() => handleTabChange("work")}
@@ -153,7 +200,9 @@ function TaskTracker() {
         <input
           type="radio"
           name="my_tabs_3"
-          className={`tab ${selectedTab === "personal" ? "tab-active border-primary" : ""}`}
+          className={`tab ${
+            selectedTab === "personal" ? "tab-active border-primary" : ""
+          }`}
           aria-label="Personal"
           checked={selectedTab === "personal"}
           onChange={() => handleTabChange("personal")}
@@ -170,7 +219,9 @@ function TaskTracker() {
         <input
           type="radio"
           name="my_tabs_3"
-          className={`tab ${selectedTab === "education" ? "tab-active border-primary" : ""}`}
+          className={`tab ${
+            selectedTab === "education" ? "tab-active border-primary" : ""
+          }`}
           aria-label="Education"
           checked={selectedTab === "education"}
           onChange={() => handleTabChange("education")}

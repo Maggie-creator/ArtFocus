@@ -123,7 +123,8 @@ const WorldClock = ({ onClose }) => {
   };
 
   return (
-    <div className="card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center">
+    <div className="card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative">
+      {/* Close Button */}
       <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button
@@ -138,11 +139,13 @@ const WorldClock = ({ onClose }) => {
         </div>
       </div>
 
+      {/* Title */}
       <h1 className="text-2xl font-bold text-white mb-4 permanent-marker">
         World Clock
       </h1>
       <p className="text-sm text-white mb-4">Be on time wherever you are.</p>
 
+      {/* City Input */}
       <div className="mb-2">
         <input
           type="text"
@@ -154,6 +157,7 @@ const WorldClock = ({ onClose }) => {
         />
       </div>
 
+      {/* Time Zone Input */}
       <div className="mb-2 relative">
         <input
           type="text"
@@ -182,6 +186,7 @@ const WorldClock = ({ onClose }) => {
         )}
       </div>
 
+      {/* Add Button */}
       <button
         className="btn btn-primary shadow-lg shadow-primary/50 mb-4"
         onClick={() => {
@@ -192,6 +197,7 @@ const WorldClock = ({ onClose }) => {
         Add
       </button>
 
+      {/* Clock Cards */}
       <div className="flex flex-col gap-4 font-sans">
         {timeZones.map(({ city }) => (
           <div key={city} className="relative flex justify-center">
@@ -203,18 +209,19 @@ const WorldClock = ({ onClose }) => {
                 {times[city] || "--:--:--"}
               </div>
             </div>
-            <button
-              className="absolute top-2 right-2 text-red-500 hover:text-red-700 w-5 h-5 flex items-center justify-center"
-              onClick={() => removeCity(city)}
-              title="Remove City"
-            >
-              <SquareX className="w-4 h-4" />
-            </button>
+            <div className="absolute top-1 right-1">
+              <div className="tooltip tooltip-left tooltip-error" data-tip="Remove City">
+                <button
+                  className="text-red-500 hover:text-red-700 p-1"
+                  onClick={() => removeCity(city)}
+                >
+                  <SquareX className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>
-
-   
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { MoreHorizontal, SquareX, Plus } from "lucide-react";
 import TextareaAutosize from "react-textarea-autosize";
 import { v4 as uuidv4 } from "uuid";
-import ReactMarkdown from "react-markdown"; // ✅ FIXED
+import ReactMarkdown from "react-markdown";
 
 const ColorOptions = {
   Green: "#b2ff9e",
@@ -13,113 +13,140 @@ const ColorOptions = {
   Yellow: "#feff9c",
 };
 
-const StickyNote = ({ onClose }) => {
-  const [notes, setNotes] = useState(() => {
-    const saved = localStorage.getItem("sticky_notes");
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const closeClickAudioRef = useRef(null);
+function StickyNotes({ onClose }) {
+  const [notes, setNotes] = useState(() => JSON.parse(localStorage.getItem("sticky_notes")) || []);
+  const [activeTab, setActiveTab] = useState(0);
+  const [editingTab, setEditingTab] = useState(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const closeSoundRef = useRef(null);
 
   useEffect(() => {
-    if (notes.length === 0) {
-      const defaultNote = {
-        id: uuidv4(),
-        text: "",
-        color: ColorOptions.Yellow,
-      };
-      const updatedNotes = [defaultNote];
-      setNotes(updatedNotes);
-      localStorage.setItem("sticky_notes", JSON.stringify(updatedNotes));
+    if (!notes.length) {
+      const defaultNote = { id: uuidv4(), name: "Note 1", text: "", color: ColorOptions.Yellow };
+      setNotes([defaultNote]);
+      setActiveTab(0);
+      localStorage.setItem("sticky_notes", JSON.stringify([defaultNote]));
     }
   }, []);
 
-  const saveToStorage = (updatedNotes) => {
-    setNotes(updatedNotes);
-    localStorage.setItem("sticky_notes", JSON.stringify(updatedNotes));
+  const saveToStorage = (updated) => {
+    setNotes(updated);
+    localStorage.setItem("sticky_notes", JSON.stringify(updated));
   };
 
   const addNote = () => {
-    const newNote = {
-      id: uuidv4(),
-      text: "",
-      color: ColorOptions.Yellow,
-    };
-    const updatedNotes = [...notes, newNote];
-    saveToStorage(updatedNotes);
+    const newName = `Note ${notes.length + 1}`;
+    const newNote = { id: uuidv4(), name: newName, text: "", color: ColorOptions.Yellow };
+    const updated = [...notes, newNote];
+    saveToStorage(updated);
+    setActiveTab(updated.length - 1);
   };
 
   const removeNote = (id) => {
-    const updatedNotes = notes.filter((note) => note.id !== id);
-    saveToStorage(updatedNotes);
+    const idx = notes.findIndex((n) => n.id === id);
+    const updated = notes.filter((n) => n.id !== id);
+    saveToStorage(updated);
+    if (!updated.length) return handleClose();
+    if (activeTab >= updated.length) setActiveTab(updated.length - 1);
+    else if (idx === activeTab) setActiveTab(Math.max(0, activeTab - 1));
   };
 
-  const editNote = (id, field, value) => {
-    const updatedNotes = notes.map((note) =>
-      note.id === id ? { ...note, [field]: value } : note
-    );
-    saveToStorage(updatedNotes);
+  const editNoteField = (id, field, value) => {
+    saveToStorage(notes.map((n) => (n.id === id ? { ...n, [field]: value } : n)));
+  };
+
+  const handleTabRename = (idx, newName) => {
+    editNoteField(notes[idx].id, "name", newName || `Note ${idx + 1}`);
+    setEditingTab(null);
   };
 
   const handleClose = () => {
-    if (closeClickAudioRef.current) {
-      closeClickAudioRef.current.currentTime = 0;
-      closeClickAudioRef.current.play();
-    }
-    setTimeout(onClose, 150);
+    closeSoundRef.current?.play();
+    setIsClosing(true);
+    setTimeout(() => {
+      setVisible(false);
+      onClose();
+    }, 150);
   };
 
-  return (
-    <div className="relative p-4">
-      <audio ref={closeClickAudioRef} src="/sounds/notebook-close-83836.mp3" />
+  if (!visible) return null;
+  const current = notes[activeTab];
 
-      <div
-        className="flex flex-col gap-4 rounded-box"
-        style={{ background: "transparent" }}
-      >
-        {notes.map((note, index) => (
-          <Sticky
-            key={note.id}
-            id={note.id}
-            text={note.text}
-            color={note.color}
-            removeNote={removeNote}
-            editNote={editNote}
-            showAddButton={index === notes.length - 1}
-            addNote={addNote}
-            showCloseButton={index === 0}
-            onClose={handleClose}
-          />
-        ))}
+  return (
+    <div className={`card card-border bg-base-100 w-96 p-4 relative transition-opacity duration-150 ${
+      isClosing ? "opacity-0" : "opacity-100"
+    }`}>
+      <audio ref={closeSoundRef} src="/sounds/notebook-close-83836.mp3" preload="auto" />
+
+      <div className="absolute top-2 right-2 z-10">
+        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close Notes">
+          <button onClick={handleClose} aria-label="Close StickyNotes" className="text-red-500 hover:text-red-700">
+            <SquareX className="w-6 h-6" />
+          </button>
+        </div>
       </div>
+
+             <h1 className="text-2xl font-bold text-white text-center mb-4 permanent-marker">
+        Sticky Notes
+      </h1>
+
+      <ul className="tabs tabs-lift mb-4">
+        {/* Tabs: notes first */}
+        {notes.map((note, idx) => (
+          <li
+            key={note.id}
+            className={`tab flex-1 p-0 border border-primary rounded-t-lg${idx < notes.length - 1 ? ' border-r-0' : ''}`}
+          >
+            {editingTab === idx ? (
+              <input
+                className="input input-bordered w-full rounded-t-lg"
+                defaultValue={note.name}
+                autoFocus
+                onBlur={(e) => handleTabRename(idx, e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleTabRename(idx, e.target.value)}
+              />
+            ) : (
+              <span
+                className={`block w-full text-center cursor-pointer p-2 rounded-t-lg ${
+                  activeTab === idx ? "bg-primary text-primary-content" : ""
+                }`}
+                onClick={() => setActiveTab(idx)}
+                onDoubleClick={() => setEditingTab(idx)}
+              >
+                {note.name}
+              </span>
+            )}
+          </li>
+        ))}
+        {/* Plus icon at the end */}
+        <li className="tab flex-none p-0 border border-primary rounded-t-lg">
+          <button onClick={addNote} aria-label="Add new note" className="w-full p-2 rounded-t-lg">
+            <Plus className="w-5 h-5 mx-auto" />
+          </button>
+        </li>
+      </ul>
+
+      {current && (
+        <Sticky
+          key={current.id}
+          id={current.id}
+          text={current.text}
+          color={current.color}
+          removeNote={removeNote}
+          editNote={editNoteField}
+        />
+      )}
     </div>
   );
-};
+}
 
-const Sticky = ({
-  id,
-  text,
-  color,
-  removeNote,
-  editNote,
-  showAddButton,
-  addNote,
-  showCloseButton,
-  onClose,
-}) => {
+function Sticky({ id, text, color, removeNote, editNote }) {
   const [showColorSelector, setShowColorSelector] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleToggleSelector = (event) => {
-    event.stopPropagation();
-    setShowColorSelector(!showColorSelector);
-  };
-
-  const selectColor = (selectedColor) => {
-    editNote(id, "color", selectedColor);
-    setShowColorSelector(false);
-  };
-
+  const handleToggleSelector = (e) => { e.stopPropagation(); setShowColorSelector((v) => !v); };
+  const selectColor = (c) => { editNote(id, "color", c); setShowColorSelector(false); };
   const displayColors = () => (
     <div className="mb-1 flex flex-wrap gap-1 p-1">
       {Object.values(ColorOptions).map((c) => (
@@ -135,70 +162,38 @@ const Sticky = ({
 
   return (
     <div
-      className="card bg-primary text-primary-content w-96 shadow-xl shadow-neutral-950/50"
-      style={{ backgroundColor: color, color: "black" }}
+      className="card bg-primary text-primary-content shadow-xl shadow-neutral-950/50 w-full h-full transition-opacity duration-150"
+      style={{ backgroundColor: color, color: "black", minHeight: "20rem" }}
     >
-      {showCloseButton && (
-        <div className="absolute top-2 right-2 z-10">
-          <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
-            <button
-              className="cursor-pointer text-red-500 hover:text-red-700"
-              onClick={onClose}
-            >
-              <SquareX className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      <div className="card-body font-playpen-sans">
+      <div className="card-body font-playpen-sans p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
-            <div className="tooltip tooltip-secondary tooltip-top" data-tip="Delete note">
-              <button
-                className="cursor-pointer text-red-500 hover:text-red-700"
-                onClick={() => removeNote(id)}
-              >
-                <SquareX className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="tooltip tooltip-secondary tooltip-top" data-tip="Change color">
-              <MoreHorizontal className="cursor-pointer" onClick={handleToggleSelector} />
-            </div>
-
-            {showAddButton && (
-              <div className="tooltip tooltip-secondary tooltip-top" data-tip="Add new note">
-                <Plus className="cursor-pointer" onClick={addNote} />
-              </div>
-            )}
+            <button onClick={() => removeNote(id)} aria-label="Delete note">
+              <SquareX className="w-5 h-5 text-red-500 hover:text-red-700" />
+            </button>
+            
+            <MoreHorizontal className="cursor-pointer" onClick={handleToggleSelector} aria-label="Change color" />
           </div>
         </div>
-
         {showColorSelector && displayColors()}
-
         {isEditing ? (
           <TextareaAutosize
-            id={`note-${id}`}
-            className="w-full bg-transparent resize-none focus:outline-none text-black playpen-sans mb-2"
+            className="w-full h-full bg-transparent resize-none focus:outline-none text-black playpen-sans mb-2"
             minRows={3}
-            maxRows={6}
+            maxRows={8}
             placeholder="Add a note"
             value={text}
             onChange={(e) => editNote(id, "text", e.target.value)}
             autoFocus
           />
         ) : (
-          <div
-            className="cursor-text text-black mb-2 playpen-sans"
-            onClick={() => setIsEditing(true)}
-          >
+          <div className="cursor-text text-black mb-2 playpen-sans" onClick={() => setIsEditing(true)}>
             <ReactMarkdown>{text || "*Click to edit note*"}</ReactMarkdown>
           </div>
         )}
       </div>
     </div>
   );
-};
+}
 
-export default StickyNote;
+export default StickyNotes;

@@ -83,13 +83,12 @@ const Spotify = ({ onClose }) => {
       />
 
       {/* Title */}
-      <h1 className="text-2xl font-bold text-white mb-4 permanent-marker text-center">
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         Spotify
       </h1>
 
       {/* URL Input */}
       <div className="form-control text-center mb-4 pb-4 space-y-2">
-        <p className="text-sm text-white mb-4">Paste your playlist here:</p>
         <input
           type="text"
           placeholder="https://open.spotify.com/playlist/..."

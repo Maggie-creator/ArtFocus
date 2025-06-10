@@ -25,7 +25,7 @@ const WorldClock = ({ onClose }) => {
   const clickSoundRef = useRef(null);
 
   useEffect(() => {
-    clickSoundRef.current = new Audio("/sounds/mouse-click-sound.mp3");
+    clickSoundRef.current = new Audio("/sounds/notebook-close-83836.mp3");
   }, []);
 
   const playClickSound = () => {
@@ -71,7 +71,10 @@ const WorldClock = ({ onClose }) => {
     const val = e.target.value;
     setNewZoneInput(val);
     if (val.trim()) {
-      const results = fuse.search(val).slice(0, 8).map((r) => r.item);
+      const results = fuse
+        .search(val)
+        .slice(0, 8)
+        .map((r) => r.item);
       setZoneSuggestions(results);
     } else {
       setZoneSuggestions([]);
@@ -110,7 +113,10 @@ const WorldClock = ({ onClose }) => {
 
   const addCity = () => {
     if (!newCity.trim() || !newZoneInput.trim()) return;
-    setTimeZones((prev) => [...prev, { city: newCity.trim(), zone: newZoneInput }]);
+    setTimeZones((prev) => [
+      ...prev,
+      { city: newCity.trim(), zone: newZoneInput },
+    ]);
     setNewCity("");
     setNewZoneInput("");
     setZoneSuggestions([]);
@@ -140,16 +146,15 @@ const WorldClock = ({ onClose }) => {
       </div>
 
       {/* Title */}
-      <h1 className="text-2xl font-bold text-white mb-4 permanent-marker">
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         World Clock
       </h1>
-      <p className="text-sm text-white mb-4">Be on time wherever you are.</p>
 
       {/* City Input */}
-      <div className="mb-2">
+      <div className=" gap 2 mb-4">
         <input
           type="text"
-          className="input w-full bg-white text-black"
+          className="input w-full bg-white text-black p-4"
           placeholder="City"
           value={newCity}
           onChange={(e) => setNewCity(e.target.value)}
@@ -158,7 +163,7 @@ const WorldClock = ({ onClose }) => {
       </div>
 
       {/* Time Zone Input */}
-      <div className="mb-2 relative">
+      <div className="mb-4 relative">
         <input
           type="text"
           className="input w-full bg-white text-black"
@@ -210,7 +215,10 @@ const WorldClock = ({ onClose }) => {
               </div>
             </div>
             <div className="absolute top-1 right-1">
-              <div className="tooltip tooltip-left tooltip-error" data-tip="Remove City">
+              <div
+                className="tooltip tooltip-left tooltip-error"
+                data-tip="Remove City"
+              >
                 <button
                   className="text-red-500 hover:text-red-700 p-1"
                   onClick={() => removeCity(city)}

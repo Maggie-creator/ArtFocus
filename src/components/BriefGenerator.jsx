@@ -168,7 +168,7 @@ function BriefGenerator({ onClose }) {
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold text-white text-center mb-4 permanent-marker">
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         Brief Generator
       </h1>
 
@@ -198,9 +198,7 @@ function BriefGenerator({ onClose }) {
                     to <span className="text-gray-700">{brief.header.to}</span>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500">
-                  {brief.header.date}
-                </div>
+                <div className="text-xs text-gray-500">{brief.header.date}</div>
               </div>
               <div className="px-4 py-2 border-b">
                 <h2 className="text-base font-semibold">
@@ -234,8 +232,7 @@ function BriefGenerator({ onClose }) {
                 {brief.colorScheme}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Type:</span>{" "}
-                {brief.type}
+                <span className="badge badge-primary">Type:</span> {brief.type}
               </div>
             </div>
           )}
@@ -243,12 +240,17 @@ function BriefGenerator({ onClose }) {
           <div className="flex justify-end gap-2 bg-gray-100 px-4 py-2 border-t">
             <button
               className="btn btn-sm btn-outline"
-              onClick={() => setViewMode(viewMode === "email" ? "raw" : "email")}
+              onClick={() =>
+                setViewMode(viewMode === "email" ? "raw" : "email")
+              }
             >
               <Mail className="w-4 h-4 mr-1" />
               {viewMode === "email" ? "Raw View" : "Email View"}
             </button>
-            <button className="btn btn-sm btn-outline" onClick={copyToClipboard}>
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={copyToClipboard}
+            >
               <ClipboardCopy className="w-4 h-4 mr-1" />
               {copied ? "Copied!" : "Copy"}
             </button>

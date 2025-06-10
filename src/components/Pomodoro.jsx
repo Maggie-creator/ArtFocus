@@ -1,6 +1,7 @@
 // components/Pomodoro.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw, SquareX } from "lucide-react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 function Pomodoro({ onClose }) {
   const [isRunning, setIsRunning] = useState(false);
@@ -85,20 +86,50 @@ function Pomodoro({ onClose }) {
         preload="auto"
       />
 
-      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker">
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         {isWorkTime ? "Work Timer" : "Break Timer"}
       </h1>
 
-      <div className="text-center text-5xl font-bold mb-4 text-primary">
+      {/* Work Lottie Animation */}
+      {isWorkTime && (
+        <div className="mb-2">
+          <DotLottieReact
+            src="https://lottie.host/e278775a-4154-4d36-80ca-d1a89eca3fab/QQei6vzvj8.lottie"
+            loop
+            autoplay
+            style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
+          />
+        </div>
+      )}
+
+      {/* Break Lottie Animation */}
+      {!isWorkTime && (
+        <div className="mb-2">
+          <DotLottieReact
+            src="https://lottie.host/6abf5447-336a-4c8e-9515-9aacb9010ab6/yjZjgWV6ap.lottie"
+            loop
+            autoplay
+            style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
+          />
+        </div>
+      )}
+
+      {/* Timer */}
+      <div className="text-center text-5xl font-bold mb-2 text-primary">
         {formatTime(secondsLeft)}
       </div>
 
+      {/* Controls */}
       <div className="flex justify-center gap-4 mb-4">
         <button
           onClick={() => setIsRunning(!isRunning)}
           className="btn btn-primary"
         >
-          {isRunning ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+          {isRunning ? (
+            <Pause className="w-5 h-5" />
+          ) : (
+            <Play className="w-5 h-5" />
+          )}
         </button>
         <button
           onClick={() => {
@@ -112,6 +143,7 @@ function Pomodoro({ onClose }) {
         </button>
       </div>
 
+      {/* Duration Settings */}
       <div className="mt-4 space-y-2">
         <div>
           <label className="label">

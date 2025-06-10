@@ -100,9 +100,7 @@ function TaskTracker({ onClose }) {
           <li
             key={task.id}
             className={`flex justify-between items-center px-3 py-2 rounded ${
-              task.completed
-                ? "bg-neutral text-white"
-                : "bg-neutral text-white"
+              task.completed ? "bg-neutral text-white" : "bg-neutral text-white"
             }`}
           >
             <span
@@ -130,10 +128,7 @@ function TaskTracker({ onClose }) {
         ))}
       </ul>
       {tasks[tabKey].length > 0 && (
-        <button
-          onClick={deleteAllTasks}
-          className="btn btn-error w-full mt-4"
-        >
+        <button onClick={deleteAllTasks} className="btn btn-error w-full mt-4">
           Delete All
         </button>
       )}
@@ -151,10 +146,7 @@ function TaskTracker({ onClose }) {
     >
       {/* Close Button */}
       <div className="absolute top-0 right-0 m-2 z-10">
-        <div
-          className="tooltip tooltip-right tooltip-primary"
-          data-tip="Close"
-        >
+        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
@@ -172,7 +164,7 @@ function TaskTracker({ onClose }) {
         preload="auto"
       />
 
-      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker">
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         To-Do List
       </h1>
 

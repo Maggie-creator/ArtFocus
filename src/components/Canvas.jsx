@@ -2,8 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { SquareX } from "lucide-react";
 
 const Canvas = ({ onClose }) => {
-  const sumoURL =
-    "https://paint.sumo.app/?parameter=value&another_parameter=another_value";
+  const KreskaURL = "https://kreska.art/app/";
 
   const clickSound = new Audio("/sounds/mouse-click-sound.mp3");
 
@@ -38,11 +37,11 @@ const Canvas = ({ onClose }) => {
   // Open Sumo Paint in a new tab and play click sound
   const handleOpenFullscreen = () => {
     clickSound.play();
-    window.open(sumoURL, "_blank");
+    window.open(KreskaURL, "_blank");
   };
 
   return (
-    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-2 w-full">
+    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-2 w-300">
       {/* Close button */}
       <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
@@ -58,14 +57,13 @@ const Canvas = ({ onClose }) => {
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold text-white mb-4 permanent-marker">
-        Sumo Paint
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
+        KreskaArt
       </h1>
-      <p className="text-sm text-white mb-4">Drawing tool and image editor.</p>
 
-      <div className="w-full h-150 rounded overflow-hidden border border-base-300 my-4">
+      <div className="w-full h-full rounded overflow-hidden border border-base-300 my-4">
         <iframe
-          src={sumoURL}
+          src={KreskaURL}
           title="Sumo Paint"
           width="100%"
           height="100%"

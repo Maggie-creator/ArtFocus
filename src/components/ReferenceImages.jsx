@@ -162,10 +162,9 @@ const ReferenceImages = ({ onClose }) => {
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold text-white mb-4 permanent-marker">
+        <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
           Reference Images
         </h1>
-        <p className="text-sm text-white mb-4">Upload your images here!</p>
 
         <input
           type="file"

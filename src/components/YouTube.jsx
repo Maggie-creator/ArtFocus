@@ -46,12 +46,9 @@ const YouTubePlayer = ({ onClose }) => {
         </div>
       </div>
 
-      <h1 className="text-2xl font-bold text-white mb-4 permanent-marker">
+      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         YouTube
       </h1>
-      <p className="text-sm text-white mb-4">
-        Get inspiration from your favourite videos!
-      </p>
 
       {/* Video URL input */}
       <input

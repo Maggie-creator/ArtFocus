@@ -115,18 +115,13 @@ function StickyNotes({ onClose }) {
         Sticky Notes
       </h1>
 
-      <ul className="tabs tabs-lift mb-4">
-        {/* Tabs: notes first */}
+      {/* Badges as tabs */}
+      <div className="flex flex-wrap gap-2 mb-4">
         {notes.map((note, idx) => (
-          <li
-            key={note.id}
-            className={`tab flex-1 p-0 border border-primary rounded-t-lg${
-              idx < notes.length - 1 ? " border-r-0" : ""
-            }`}
-          >
+          <div key={note.id}>
             {editingTab === idx ? (
               <input
-                className="input input-bordered w-full rounded-t-lg"
+                className="input input-sm input-bordered"
                 defaultValue={note.name}
                 autoFocus
                 onBlur={(e) => handleTabRename(idx, e.target.value)}
@@ -135,29 +130,29 @@ function StickyNotes({ onClose }) {
                 }
               />
             ) : (
-              <span
-                className={`block w-full text-center cursor-pointer p-2 rounded-t-lg ${
-                  activeTab === idx ? "bg-primary text-primary-content" : ""
+              <div
+                className={`badge badge-soft cursor-pointer ${
+                  activeTab === idx ? "badge-primary" : "badge-ghost"
                 }`}
                 onClick={() => setActiveTab(idx)}
                 onDoubleClick={() => setEditingTab(idx)}
               >
                 {note.name}
-              </span>
+              </div>
             )}
-          </li>
+          </div>
         ))}
-        {/* Plus icon at the end */}
-        <li className="tab flex-none p-0 border border-primary rounded-t-lg">
-          <button
-            onClick={addNote}
-            aria-label="Add new note"
-            className="w-full p-2 rounded-t-lg"
-          >
-            <Plus className="w-5 h-5 mx-auto" />
-          </button>
-        </li>
-      </ul>
+
+        {/* Plus badge */}
+        <div
+          className="badge badge-outline badge-primary cursor-pointer"
+          onClick={addNote}
+          aria-label="Add new note"
+        >
+        
+          <Plus className="w-4 h-4 " />
+        </div>
+      </div>
 
       {current && (
         <Sticky
@@ -206,15 +201,18 @@ function Sticky({ id, text, color, removeNote, editNote }) {
       <div className="card-body font-playpen-sans p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
+            <div className="tooltip tooltip-right tooltip-secondary" data-tip="Delete note">
             <button onClick={() => removeNote(id)} aria-label="Delete note">
               <SquareX className="w-5 h-5 text-red-500 hover:text-red-700" />
             </button>
-
+            </div>
+            <div className="tooltip tooltip-right tooltip-secondary" data-tip="Change note's color">
             <MoreHorizontal
               className="cursor-pointer"
               onClick={handleToggleSelector}
               aria-label="Change color"
             />
+            </div>
           </div>
         </div>
         {showColorSelector && displayColors()}
@@ -233,7 +231,7 @@ function Sticky({ id, text, color, removeNote, editNote }) {
             className="cursor-text text-black mb-2 playpen-sans"
             onClick={() => setIsEditing(true)}
           >
-            <ReactMarkdown>{text || "*Click to edit note*"}</ReactMarkdown>
+            <ReactMarkdown>{text || "*Click to write your note*"}</ReactMarkdown>
           </div>
         )}
       </div>

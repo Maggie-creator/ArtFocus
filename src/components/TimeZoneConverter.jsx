@@ -71,14 +71,17 @@ const TimeZoneConverter = ({ onClose }) => {
 
   return (
     <div
-      className={`card card-border bg-base-100 w-96 p-4 relative shadow-xl shadow-neutral-950/50 text-base-content
+      className={`card card-border bg-base-100 w-96 p-4 relative shadow-xl shadow-neutral-950/50 text-base-content z-[1050]
         ${isClosing ? "opacity-0" : "opacity-100"}
       `}
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
     >
       {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2">
-        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
+      <div className="absolute top-0 right-0 m-2 z-[1050]">
+        <div
+          className="tooltip tooltip-right tooltip-primary z-[1050] relative"
+          data-tip="Close"
+        >
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
@@ -131,7 +134,7 @@ const TimeZoneConverter = ({ onClose }) => {
 
       <div className="flex gap-2 mb-4">
         <select
-          className="select border-primary text-white w-1/2 rounded"
+          className="select border-primary w-1/2 rounded"
           value={convertFromZone}
           onChange={(e) => setConvertFromZone(e.target.value)}
         >
@@ -144,7 +147,7 @@ const TimeZoneConverter = ({ onClose }) => {
         </select>
 
         <select
-          className="select border-primary text-white w-1/2 rounded"
+          className="select border-primary w-1/2 rounded"
           value={convertToZone}
           onChange={(e) => setConvertToZone(e.target.value)}
         >

@@ -84,7 +84,7 @@ function TaskTracker({ onClose }) {
       <div className="flex mb-4">
         <input
           type="text"
-          className="input input-bordered border-primary flex-1 mr-2"
+          className="input input-bordered border-primary text-white flex-1 mr-2"
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
           placeholder="Enter a task..."
@@ -137,19 +137,16 @@ function TaskTracker({ onClose }) {
 
   return (
     <div
-      className={`relative z-50 card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
+      className={`relative z-[60] card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
       style={{ willChange: "opacity" }}
     >
-      {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2 z-50">
-        <div
-          className="tooltip tooltip-right tooltip-primary z-50"
-          data-tip="Close"
-        >
+      {/* Close Button with Tooltip */}
+      <div className="absolute top-0 right-0 m-2 z-[999]">
+        <div className="tooltip tooltip-right tooltip-primary z-[999]" data-tip="Close">
           <button
-            className="cursor-pointer text-red-500 hover:text-red-700"
+            className="cursor-pointer text-red-500 hover:text-red-700 z-[999]"
             onClick={handleClose}
             aria-label="Close Task Tracker"
           >

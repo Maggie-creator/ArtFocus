@@ -52,7 +52,7 @@ const Spotify = ({ onClose }) => {
 
   return (
     <div
-      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center shadow-xl shadow-neutral-950/50
+      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center shadow-xl shadow-neutral-950/50 relative
         ${isClosing ? "opacity-0" : "opacity-100"}
       `}
       style={{ willChange: "opacity" }}
@@ -114,7 +114,7 @@ const Spotify = ({ onClose }) => {
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         allowFullScreen
         loading="lazy"
-        className="rounded-box"
+        className="rounded-box bg-base-300"
       ></iframe>
     </div>
   );

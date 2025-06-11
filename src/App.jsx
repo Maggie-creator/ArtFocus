@@ -2,20 +2,16 @@ import React, { useState } from "react";
 import Pomodoro from "./components/Pomodoro";
 import TaskTracker from "./components/TaskTracker";
 import BriefGenerator from "./components/BriefGenerator";
-import Canvas from "./components/Canvas";
-import KanbanBoard from "./components/KanbanBoard";
 import Quote from "./components/Quote";
 import ReferenceImages from "./components/ReferenceImages";
-import Spotify from "./components/Spotify";
 import TimeZoneConverter from "./components/TimeZoneConverter";
 import WorldClock from "./components/WorldClock";
 import YouTube from "./components/YouTube";
 import StickyNotes from "./components/StickyNotes";
-import Calendar from "./components/Calendar"; // ✅ Import fixed
+import Canvas from "./components/Canvas";
+import Spotify from "./components/Spotify";
 
 const App = () => {
-  const [showCalendar, setShowCalendar] = useState(false);
-
   return (
     <div className="min-h-screen bg-base-200 p-4">
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
@@ -33,14 +29,22 @@ const App = () => {
         <TimeZoneConverter />
         <Quote />
       </div>
-      <div class="flex flex-wrap justify-center gap-4 p-4">
+
+      <div className="flex flex-wrap justify-center gap-4 p-4">
         <ReferenceImages />
         <BriefGenerator />
         <YouTube />
       </div>
-      <div class="flex flex-wrap justify-center gap-4 p-4">
-        <div className="w-96 grow">
-          <KanbanBoard />
+
+      <div className="flex flex-wrap justify-center gap-4 p-4">
+        {/* Spotify fixed width */}
+        <div className="basis-[96px] max-w-full">
+          <Spotify />
+        </div>
+
+        {/* KanbanBoard aligned with Spotify height and placed right */}
+        <div className="basis-[790px] max-w-full">
+          <Canvas />
         </div>
       </div>
     </div>

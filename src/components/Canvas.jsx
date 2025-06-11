@@ -41,7 +41,7 @@ const Canvas = ({ onClose }) => {
   };
 
   return (
-    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-2 w-300">
+    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-500">
       {/* Close button */}
       <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
@@ -58,15 +58,15 @@ const Canvas = ({ onClose }) => {
       </div>
 
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
-        KreskaArt
+        Kreska Art
       </h1>
 
       <div className="w-full h-full rounded overflow-hidden border border-base-300 my-4">
         <iframe
           src={KreskaURL}
-          title="Sumo Paint"
+          title="Kreska Art"
           width="100%"
-          height="100%"
+          height="200%"
           style={{ border: "none" }}
           allowFullScreen
         />

@@ -187,7 +187,13 @@ function BriefGenerator({ onClose }) {
       </button>
 
       {brief && (
-        <div className="bg-white rounded-md shadow overflow-hidden text-sm text-gray-800 relative">
+        <div
+          className={`rounded-md shadow overflow-hidden text-sm relative ${
+            viewMode === "email"
+              ? "bg-white text-gray-800"
+              : "bg-base-300 text-white"
+          }`}
+        >
           {viewMode === "email" ? (
             <>
               <div className="flex items-start px-4 py-5 border-b">
@@ -214,60 +220,74 @@ function BriefGenerator({ onClose }) {
               </div>
             </>
           ) : (
-            <div className="bg-base-300 text-white p-4">
+
+
+            <div className="p-4">
               <div className="mb-2">
-                <span className="badge badge-primary">Theme:</span>{" "}
+                <span className="badge badge-primary mt-4 mb-2">Theme:</span>{" "}
                 {brief.theme}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Genre:</span>{" "}
+                <span className="badge badge-primary mb-2">Genre:</span>{" "}
                 {brief.genre}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Character:</span>{" "}
+                <span className="badge badge-primary mb-2">Character:</span>{" "}
                 {brief.character}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Environment:</span>{" "}
+                <span className="badge badge-primary mb-2">Environment:</span>{" "}
                 {brief.environment}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Color Scheme:</span>{" "}
+                <span className="badge badge-primary mb-2">Color Scheme:</span>{" "}
                 {brief.colorScheme}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary">Type:</span> {brief.type}
+                <span className="badge badge-primary mb-2">Type:</span> {brief.type}
               </div>
             </div>
           )}
 
-          <div className="flex flex-nowrap justify-between gap-2 bg-gray-100 px-4 py-2 border-t">
-            <button
-              className="btn btn-sm btn-outline"
-              onClick={() =>
-                setViewMode(viewMode === "email" ? "raw" : "email")
-              }
-            >
-              <Mail className="w-4 h-4 mr-1" />
-              {viewMode === "email" ? "Brief" : "Email"}
-            </button>
-            <button
-              className="btn btn-sm btn-outline"
-              onClick={copyToClipboard}
-            >
-              <ClipboardCopy className="w-4 h-4 mr-1" />
-              {copied ? "Copied!" : "Copy"}
-            </button>
-            <button className="btn btn-sm btn-outline" onClick={exportTXT}>
-              <FileText className="w-4 h-4 mr-1" />
-              Export
-            </button>
-            <button
-              className="btn btn-sm btn-outline"
-              onClick={handleCloseBrief}
-            >
-              Close
-            </button>
+          <div
+            className={`flex flex-nowrap justify-between gap-2 px-4 py-2 ${
+              viewMode === "email" ? "bg-gray-100" : "bg-base-300"
+            }`}
+          >
+            {[
+              {
+                onClick: () =>
+                  setViewMode(viewMode === "email" ? "raw" : "email"),
+                icon: <Mail className="w-4 h-4 mr-1" />,
+                label: viewMode === "email" ? "Brief" : "Email",
+              },
+              {
+                onClick: copyToClipboard,
+                icon: <ClipboardCopy className="w-4 h-4 mr-1" />,
+                label: copied ? "Copied!" : "Copy",
+              },
+              {
+                onClick: exportTXT,
+                icon: <FileText className="w-4 h-4 mr-1" />,
+                label: "Export",
+              },
+              {
+                onClick: handleCloseBrief,
+                icon: null,
+                label: "Close",
+              },
+            ].map((btn, idx) => (
+              <button
+                key={idx}
+                className={`btn btn-sm ${
+                  viewMode === "email" ? "btn-neutral" : "btn-primary"
+                }`}
+                onClick={btn.onClick}
+              >
+                {btn.icon}
+                {btn.label}
+              </button>
+            ))}
           </div>
         </div>
       )}

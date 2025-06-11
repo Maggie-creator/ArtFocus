@@ -153,7 +153,7 @@ const KanbanBoard = ({ onClose }) => {
   ];
 
   return (
-    <div className="relative flex flex-col items-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-2 w-full">
+    <div className="relative flex flex-col items-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-190">
       <audio
         ref={clickSoundRef}
         src="/sounds/mouse-click-sound.mp3"

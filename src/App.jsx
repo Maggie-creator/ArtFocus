@@ -39,8 +39,12 @@ const App = () => {
         <YouTube />
       </div>
       <div class="flex justify-center w-300 gap-4 p-4">
-        <Spotify />
-        <KanbanBoard />
+        <div className="w-96">
+          <Spotify />
+        </div>
+        <div className="w-150 shrink">
+          <KanbanBoard />
+        </div>
       </div>
     </div>
   );

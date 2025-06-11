@@ -14,6 +14,10 @@ function Pomodoro({ onClose }) {
 
   const timerRef = useRef(null);
   const closeSoundRef = useRef(null);
+  const tickingSoundRef = useRef(null);
+  const serviceBellRef = useRef(null);
+  const mouseClickRef = useRef(null);
+  const prevIsWorkTimeRef = useRef(isWorkTime);
 
   useEffect(() => {
     setSecondsLeft(workDuration * 60);
@@ -39,6 +43,33 @@ function Pomodoro({ onClose }) {
     return () => clearInterval(timerRef.current);
   }, [isRunning, isWorkTime, breakDuration, workDuration]);
 
+  // Play/stop ticking sound according to timer and work/break state
+  useEffect(() => {
+    if (isRunning) {
+      // Play ticking sound looped
+      if (tickingSoundRef.current) {
+        tickingSoundRef.current.loop = true;
+        tickingSoundRef.current.play().catch(() => {});
+      }
+    } else {
+      if (tickingSoundRef.current) {
+        tickingSoundRef.current.pause();
+        tickingSoundRef.current.currentTime = 0;
+      }
+    }
+  }, [isRunning]);
+
+  // Play service bell at start of break
+  useEffect(() => {
+    // Detect transition from work to break
+    if (prevIsWorkTimeRef.current !== isWorkTime && !isWorkTime) {
+      if (serviceBellRef.current) {
+        serviceBellRef.current.play().catch(() => {});
+      }
+    }
+    prevIsWorkTimeRef.current = isWorkTime;
+  }, [isWorkTime]);
+
   const formatTime = (secs) => {
     const mins = Math.floor(secs / 60);
     const seconds = secs % 60;
@@ -57,6 +88,24 @@ function Pomodoro({ onClose }) {
       setVisible(false);
       onClose();
     }, 150);
+  };
+
+  const handlePlayPause = () => {
+    if (mouseClickRef.current) {
+      mouseClickRef.current.currentTime = 0;
+      mouseClickRef.current.play().catch(() => {});
+    }
+    setIsRunning(!isRunning);
+  };
+
+  const handleReset = () => {
+    if (mouseClickRef.current) {
+      mouseClickRef.current.currentTime = 0;
+      mouseClickRef.current.play().catch(() => {});
+    }
+    setIsRunning(false);
+    setSecondsLeft(workDuration * 60);
+    setIsWorkTime(true);
   };
 
   if (!visible) return null;
@@ -83,6 +132,24 @@ function Pomodoro({ onClose }) {
       <audio
         ref={closeSoundRef}
         src="/sounds/notebook-close-83836.mp3"
+        preload="auto"
+      />
+      {/* Ticking Clock Sound */}
+      <audio
+        ref={tickingSoundRef}
+        src="/sounds/tickingclock.mp3"
+        preload="auto"
+      />
+      {/* Service Bell Sound */}
+      <audio
+        ref={serviceBellRef}
+        src="/sounds/service-bell-ring-14610.mp3"
+        preload="auto"
+      />
+      {/* Mouse Click Sound */}
+      <audio
+        ref={mouseClickRef}
+        src="/sounds/mouse-click-sound.mp3"
         preload="auto"
       />
 
@@ -121,24 +188,14 @@ function Pomodoro({ onClose }) {
 
       {/* Controls */}
       <div className="flex justify-center gap-4 mb-4">
-        <button
-          onClick={() => setIsRunning(!isRunning)}
-          className="btn btn-primary"
-        >
+        <button onClick={handlePlayPause} className="btn btn-primary">
           {isRunning ? (
             <Pause className="w-5 h-5" />
           ) : (
             <Play className="w-5 h-5" />
           )}
         </button>
-        <button
-          onClick={() => {
-            setIsRunning(false);
-            setSecondsLeft(workDuration * 60);
-            setIsWorkTime(true);
-          }}
-          className="btn btn-secondary"
-        >
+        <button onClick={handleReset} className="btn btn-secondary">
           <RotateCcw className="w-5 h-5" />
         </button>
       </div>
@@ -147,7 +204,7 @@ function Pomodoro({ onClose }) {
       <div className="mt-4 space-y-2">
         <div>
           <label className="label">
-            <span className="label-text">Work Duration (minutes)</span>
+            <span className="label-text mb-2">Work Duration (minutes)</span>
           </label>
           <input
             type="number"
@@ -158,7 +215,9 @@ function Pomodoro({ onClose }) {
         </div>
         <div>
           <label className="label">
-            <span className="label-text">Break Duration (minutes)</span>
+            <span className="label-text mb-2 mt-2">
+              Break Duration (minutes)
+            </span>
           </label>
           <input
             type="number"

@@ -24,7 +24,7 @@ const TimeZoneConverter = ({ onClose }) => {
     }
 
     if (!inputDate || !inputTime || !convertFromZone || !convertToZone) {
-      setConvertedOutput("Please fill in all fields before converting.");
+      setConvertedOutput("Please, fill in all fields before converting.");
       return;
     }
 
@@ -77,12 +77,11 @@ const TimeZoneConverter = ({ onClose }) => {
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
     >
       {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2 z-10">
+      <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
-            aria-label="Close Time Zone Converter"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -109,17 +108,16 @@ const TimeZoneConverter = ({ onClose }) => {
         <div className="relative w-1/2">
           <input
             type="date"
-            className="input bg-white text-black w-full pr-10 rounded"
+            className="input input-bordered border-primary w-full"
             value={inputDate}
             onChange={(e) => setInputDate(e.target.value)}
           />
-          <Calendar className="absolute right-2 top-2.5 w-5 h-5 text-gray-700 pointer-events-none" />
         </div>
 
         <div className="relative w-1/2">
           <input
             type="time"
-            className="input bg-white text-black w-full pr-10 rounded"
+            className="input input-bordered border-primary w-full"
             value={inputTime}
             onChange={(e) => setInputTime(e.target.value)}
             onKeyDown={(e) => {
@@ -128,13 +126,12 @@ const TimeZoneConverter = ({ onClose }) => {
               }
             }}
           />
-          <Clock className="absolute right-2 top-2.5 w-5 h-5 text-gray-700 pointer-events-none" />
         </div>
       </div>
 
       <div className="flex gap-2 mb-4">
         <select
-          className="select bg-base-300 text-white w-1/2 rounded"
+          className="select border-primary text-white w-1/2 rounded"
           value={convertFromZone}
           onChange={(e) => setConvertFromZone(e.target.value)}
         >
@@ -147,7 +144,7 @@ const TimeZoneConverter = ({ onClose }) => {
         </select>
 
         <select
-          className="select bg-base-300 text-white w-1/2 rounded"
+          className="select border-primary text-white w-1/2 rounded"
           value={convertToZone}
           onChange={(e) => setConvertToZone(e.target.value)}
         >

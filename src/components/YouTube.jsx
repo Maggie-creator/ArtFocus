@@ -56,7 +56,7 @@ const YouTubePlayer = ({ onClose }) => {
         value={videoUrl}
         onChange={handleUrlChange}
         placeholder="Enter YouTube video URL"
-        className="w-full p-2 mb-4 bg-white text-black rounded my-4"
+        className="input input-bordered border-primary w-full"
       />
 
       {/* React Player */}

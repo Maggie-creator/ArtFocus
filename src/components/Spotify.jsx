@@ -95,7 +95,7 @@ const Spotify = ({ onClose }) => {
           value={inputUrl}
           onChange={handleUrlChange}
           onKeyDown={handleKeyDown}
-          className="input input-bordered w-full bg-base-100 text-sm p-2"
+          className="input input-bordered border-primary w-full"
         />
         <button
           onClick={handleLoadPlaylist}

@@ -33,7 +33,7 @@ const Calendar = ({ onClose }) => {
   };
 
   return (
-    <div className="card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 items-center text-center">
+    <div className="card card-border bg-base-100 w-96">
       <div className="absolute top-0 right-0 m-2">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button

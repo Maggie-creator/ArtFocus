@@ -17,7 +17,7 @@ function BriefGenerator({ onClose }) {
   const [types, setTypes] = useState([]);
 
   const [error, setError] = useState(null);
-  const [closing, setClosing] = useState(false); // new state for animation
+  const [closing, setClosing] = useState(false);
 
   const audioContextRef = useRef(null);
   const closeSoundRef = useRef(null);
@@ -148,7 +148,11 @@ function BriefGenerator({ onClose }) {
     setClosing(true);
     setTimeout(() => {
       onClose();
-    }, 300); // Match animation duration
+    }, 300);
+  };
+
+  const handleCloseBrief = () => {
+    setBrief(null);
   };
 
   return (
@@ -237,7 +241,7 @@ function BriefGenerator({ onClose }) {
             </div>
           )}
 
-          <div className="flex justify-end gap-2 bg-gray-100 px-4 py-2 border-t">
+          <div className="flex flex-nowrap justify-between gap-2 bg-gray-100 px-4 py-2 border-t">
             <button
               className="btn btn-sm btn-outline"
               onClick={() =>
@@ -245,7 +249,7 @@ function BriefGenerator({ onClose }) {
               }
             >
               <Mail className="w-4 h-4 mr-1" />
-              {viewMode === "email" ? "Raw View" : "Email View"}
+              {viewMode === "email" ? "Brief" : "Email"}
             </button>
             <button
               className="btn btn-sm btn-outline"
@@ -257,6 +261,12 @@ function BriefGenerator({ onClose }) {
             <button className="btn btn-sm btn-outline" onClick={exportTXT}>
               <FileText className="w-4 h-4 mr-1" />
               Export
+            </button>
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={handleCloseBrief}
+            >
+              Close
             </button>
           </div>
         </div>

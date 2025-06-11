@@ -38,11 +38,8 @@ const App = () => {
         <BriefGenerator />
         <YouTube />
       </div>
-      <div class="flex justify-center w-300 gap-4 p-4">
-        <div className="w-96">
-          <Spotify />
-        </div>
-        <div className="w-150 shrink">
+      <div class="flex flex-wrap justify-center gap-4 p-4">
+        <div className="w-96 grow">
           <KanbanBoard />
         </div>
       </div>

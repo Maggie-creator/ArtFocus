@@ -15,7 +15,6 @@ function TaskTracker({ onClose }) {
 
   const closeSoundRef = useRef(null);
 
-  // Load tasks from localStorage on mount
   useEffect(() => {
     const storedTasks = localStorage.getItem("taskTrackerData");
     if (storedTasks) {
@@ -23,7 +22,6 @@ function TaskTracker({ onClose }) {
     }
   }, []);
 
-  // Save tasks to localStorage whenever tasks change
   useEffect(() => {
     localStorage.setItem("taskTrackerData", JSON.stringify(tasks));
   }, [tasks]);
@@ -139,14 +137,17 @@ function TaskTracker({ onClose }) {
 
   return (
     <div
-      className={`relative card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
+      className={`relative z-50 card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
       style={{ willChange: "opacity" }}
     >
       {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2 z-10">
-        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
+      <div className="absolute top-0 right-0 m-2 z-50">
+        <div
+          className="tooltip tooltip-right tooltip-primary z-50"
+          data-tip="Close"
+        >
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
@@ -169,7 +170,6 @@ function TaskTracker({ onClose }) {
       </h1>
 
       <div className="tabs tabs-lift">
-        {/* Work Tab */}
         <input
           type="radio"
           name="my_tabs_3"
@@ -188,7 +188,6 @@ function TaskTracker({ onClose }) {
           {selectedTab === "work" && renderTabContent("work")}
         </div>
 
-        {/* Personal Tab */}
         <input
           type="radio"
           name="my_tabs_3"
@@ -207,7 +206,6 @@ function TaskTracker({ onClose }) {
           {selectedTab === "personal" && renderTabContent("personal")}
         </div>
 
-        {/* Education Tab */}
         <input
           type="radio"
           name="my_tabs_3"

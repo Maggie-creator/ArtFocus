@@ -154,7 +154,7 @@ const WorldClock = ({ onClose }) => {
       <div className=" gap 2 mb-4">
         <input
           type="text"
-          className="input w-full bg-white text-black p-4"
+          className="input input-border border-primary w-full bg-base-100 text-white p-4"
           placeholder="City"
           value={newCity}
           onChange={(e) => setNewCity(e.target.value)}
@@ -166,7 +166,7 @@ const WorldClock = ({ onClose }) => {
       <div className="mb-4 relative">
         <input
           type="text"
-          className="input w-full bg-white text-black"
+          className="input input-border border-primary w-full bg-base-10 text-white"
           placeholder="Time Zone"
           value={newZoneInput}
           onChange={handleZoneInputChange}

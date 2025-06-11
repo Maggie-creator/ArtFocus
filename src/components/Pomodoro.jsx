@@ -43,25 +43,17 @@ function Pomodoro({ onClose }) {
     return () => clearInterval(timerRef.current);
   }, [isRunning, isWorkTime, breakDuration, workDuration]);
 
-  // Play/stop ticking sound according to timer and work/break state
   useEffect(() => {
-    if (isRunning) {
-      // Play ticking sound looped
-      if (tickingSoundRef.current) {
-        tickingSoundRef.current.loop = true;
-        tickingSoundRef.current.play().catch(() => {});
-      }
-    } else {
-      if (tickingSoundRef.current) {
-        tickingSoundRef.current.pause();
-        tickingSoundRef.current.currentTime = 0;
-      }
+    if (isRunning && tickingSoundRef.current) {
+      tickingSoundRef.current.loop = true;
+      tickingSoundRef.current.play().catch(() => {});
+    } else if (tickingSoundRef.current) {
+      tickingSoundRef.current.pause();
+      tickingSoundRef.current.currentTime = 0;
     }
   }, [isRunning]);
 
-  // Play service bell at start of break
   useEffect(() => {
-    // Detect transition from work to break
     if (prevIsWorkTimeRef.current !== isWorkTime && !isWorkTime) {
       if (serviceBellRef.current) {
         serviceBellRef.current.play().catch(() => {});
@@ -112,12 +104,12 @@ function Pomodoro({ onClose }) {
 
   return (
     <div
-      className={`card card-border bg-base-100 w-96 p-4 relative transition-opacity duration-150 ${
+      className={`z-[999] card card-border bg-base-100 w-96 p-4 relative transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
     >
       {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2">
+      <div className="absolute top-0 right-0 m-2 z-[1000]">
         <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
@@ -128,25 +120,22 @@ function Pomodoro({ onClose }) {
         </div>
       </div>
 
-      {/* Close Sound */}
+      {/* Sounds */}
       <audio
         ref={closeSoundRef}
         src="/sounds/notebook-close-83836.mp3"
         preload="auto"
       />
-      {/* Ticking Clock Sound */}
       <audio
         ref={tickingSoundRef}
         src="/sounds/tickingclock.mp3"
         preload="auto"
       />
-      {/* Service Bell Sound */}
       <audio
         ref={serviceBellRef}
         src="/sounds/service-bell-ring-14610.mp3"
         preload="auto"
       />
-      {/* Mouse Click Sound */}
       <audio
         ref={mouseClickRef}
         src="/sounds/mouse-click-sound.mp3"
@@ -157,29 +146,19 @@ function Pomodoro({ onClose }) {
         {isWorkTime ? "Work Timer" : "Break Timer"}
       </h1>
 
-      {/* Work Lottie Animation */}
-      {isWorkTime && (
-        <div className="mb-2">
-          <DotLottieReact
-            src="https://lottie.host/e278775a-4154-4d36-80ca-d1a89eca3fab/QQei6vzvj8.lottie"
-            loop
-            autoplay
-            style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
-          />
-        </div>
-      )}
-
-      {/* Break Lottie Animation */}
-      {!isWorkTime && (
-        <div className="mb-2">
-          <DotLottieReact
-            src="https://lottie.host/6abf5447-336a-4c8e-9515-9aacb9010ab6/yjZjgWV6ap.lottie"
-            loop
-            autoplay
-            style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
-          />
-        </div>
-      )}
+      {/* Animations */}
+      <div className="mb-2">
+        <DotLottieReact
+          src={
+            isWorkTime
+              ? "https://lottie.host/e278775a-4154-4d36-80ca-d1a89eca3fab/QQei6vzvj8.lottie"
+              : "https://lottie.host/6abf5447-336a-4c8e-9515-9aacb9010ab6/yjZjgWV6ap.lottie"
+          }
+          loop
+          autoplay
+          style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
+        />
+      </div>
 
       {/* Timer */}
       <div className="text-center text-5xl font-bold mb-2 text-primary">

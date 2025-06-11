@@ -100,10 +100,7 @@ function StickyNotes({ onClose }) {
       />
 
       <div className="absolute top-2 right-2 z-10">
-        <div
-          className="tooltip tooltip-right tooltip-primary"
-          data-tip="Close Notes"
-        >
+        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
           <button
             onClick={handleClose}
             aria-label="Close StickyNotes"

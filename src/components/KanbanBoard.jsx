@@ -184,7 +184,7 @@ const KanbanBoard = ({ onClose }) => {
         {columns.map(({ key, label, icon }) => (
           <div
             key={key}
-            className="card bg-base-300 text-neutral-content rounded-box p-5 shadow-lg min-h-[300px] flex-1 min-w-[250px]"
+            className="card bg-base-300 text-neutral-content rounded-box p-5 shadow-lg min-h-[300px] flex-1 min-w-[238px]"
             onDrop={(e) => onDrop(e, key)}
             onDragOver={allowDrop}
           >

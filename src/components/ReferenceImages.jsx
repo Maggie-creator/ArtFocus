@@ -170,7 +170,7 @@ const ReferenceImages = ({ onClose }) => {
           type="file"
           accept="image/*"
           multiple
-          className="file-input file-input-bordered w-full my-4 bg-primary text-white"
+          className="file-input file-input-bordered w-full mb-2 bg-primary text-white"
           onMouseDown={playClickSound}
           onChange={handleImageUpload}
         />

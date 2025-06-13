@@ -99,7 +99,7 @@ const Spotify = ({ onClose }) => {
         />
         <button
           onClick={handleLoadPlaylist}
-          className="btn btn-primary shadow-lg shadow-primary/50 w-full text-sm"
+          className="btn btn-primary shadow-lg shadow-primary/50 w-full text-sm mt-4"
         >
           Load Playlist
         </button>

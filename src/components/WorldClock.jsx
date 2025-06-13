@@ -1,7 +1,7 @@
+// components/WorldClock.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { SquareX } from "lucide-react";
 import Fuse from "fuse.js";
-import TimeZoneConverter from "./TimeZoneConverter";
 
 const allTimeZones = Intl.supportedValuesOf("timeZone");
 
@@ -23,9 +23,14 @@ const WorldClock = ({ onClose }) => {
   const [activeSuggestion, setActiveSuggestion] = useState(0);
 
   const clickSoundRef = useRef(null);
+  const closeSoundRef = useRef(null);
+
+  const [isClosing, setIsClosing] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    clickSoundRef.current = new Audio("/sounds/notebook-close-83836.mp3");
+    clickSoundRef.current = new Audio("/sounds/mouse-click-sound.mp3");
+    closeSoundRef.current = new Audio("/sounds/notebook-close-83836.mp3");
   }, []);
 
   const playClickSound = () => {
@@ -128,22 +133,42 @@ const WorldClock = ({ onClose }) => {
     setTimeZones((prev) => prev.filter(({ city }) => city !== cityToRemove));
   };
 
+  const handleClose = () => {
+    if (closeSoundRef.current) {
+      closeSoundRef.current.currentTime = 0;
+      closeSoundRef.current.play();
+    }
+    setIsClosing(true);
+    setTimeout(() => {
+      setVisible(false);
+      if (onClose) onClose();
+    }, 150);
+  };
+
+  if (!visible) return null;
+
   return (
-    <div className="card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative">
+    <div
+      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[9999]
+        ${isClosing ? "opacity-0" : "opacity-100"}
+      `}
+      style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
+    >
       {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2">
-        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
+      <div className="absolute top-0 right-0 m-2 z-[9999]">
+        <div className="tooltip tooltip-right tooltip-primary z-[9999]" data-tip="Close">
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
-            onClick={() => {
-              playClickSound();
-              onClose();
-            }}
+            onClick={handleClose}
           >
             <SquareX className="w-6 h-6" />
           </button>
         </div>
       </div>
+
+      {/* Sounds */}
+      <audio ref={clickSoundRef} src="/sounds/mouse-click-sound.mp3" preload="auto" />
+      <audio ref={closeSoundRef} src="/sounds/notebook-close-83836.mp3" preload="auto" />
 
       {/* Title */}
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
@@ -151,7 +176,7 @@ const WorldClock = ({ onClose }) => {
       </h1>
 
       {/* City Input */}
-      <div className=" gap 2 mb-4">
+      <div className="gap-2 mb-4">
         <input
           type="text"
           className="input input-border border-primary w-full bg-base-100 text-white p-4"
@@ -163,7 +188,7 @@ const WorldClock = ({ onClose }) => {
       </div>
 
       {/* Time Zone Input */}
-      <div className="mb-4 relative">
+      <div className="mb-4 relative z-[9999]">
         <input
           type="text"
           className="input input-border border-primary w-full bg-base-10 text-white"
@@ -173,7 +198,7 @@ const WorldClock = ({ onClose }) => {
           onKeyDown={handleZoneKeyDown}
         />
         {zoneSuggestions.length > 0 && (
-          <ul className="absolute z-10 bg-gray-900 text-white w-full mt-1 rounded shadow max-h-40 overflow-y-auto text-left border border-base-300">
+          <ul className="absolute z-[9999] bg-gray-900 text-white w-full mt-1 rounded shadow max-h-40 overflow-y-auto text-left border border-base-300">
             {zoneSuggestions.map((suggestion, index) => (
               <li
                 key={suggestion}
@@ -207,18 +232,13 @@ const WorldClock = ({ onClose }) => {
         {timeZones.map(({ city }) => (
           <div key={city} className="relative flex justify-center">
             <div className="card bg-base-300 p-4 w-full items-center justify-center rounded-xl shadow-lg text-center">
-              <h3 className="text-xl font-semibold mb-2 text-primary">
-                {city}
-              </h3>
+              <h3 className="text-xl font-semibold mb-2 text-primary">{city}</h3>
               <div className="text-base font-sans text-white">
                 {times[city] || "--:--:--"}
               </div>
             </div>
-            <div className="absolute top-1 right-1">
-              <div
-                className="tooltip tooltip-left tooltip-error"
-                data-tip="Remove City"
-              >
+            <div className="absolute top-1 right-1 z-[9999]">
+              <div className="tooltip tooltip-left tooltip-error z-[9999]" data-tip="Remove City">
                 <button
                   className="text-red-500 hover:text-red-700 p-1"
                   onClick={() => removeCity(city)}

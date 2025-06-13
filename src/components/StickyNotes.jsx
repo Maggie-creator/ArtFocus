@@ -131,9 +131,10 @@ function StickyNotes({ onClose }) {
               />
             ) : (
               <div
-                className={`badge badge-soft cursor-pointer ${
-                  activeTab === idx ? "badge-primary" : "badge-ghost"
+                className={`badge cursor-pointer ${
+                  activeTab === idx ? "" : "badge-ghost"
                 }`}
+                style={{ backgroundColor: note.color, color: "black" }}
                 onClick={() => setActiveTab(idx)}
                 onDoubleClick={() => setEditingTab(idx)}
               >
@@ -145,12 +146,17 @@ function StickyNotes({ onClose }) {
 
         {/* Plus badge */}
         <div
-          className="badge badge-outline badge-primary cursor-pointer"
+          className="badge badge-outline badge-secondary cursor-pointer"
+          style={{
+            height: "1.75rem",
+            padding: "0 0.45rem",
+            display: "flex",
+            alignItems: "center",
+          }}
           onClick={addNote}
           aria-label="Add new note"
         >
-        
-          <Plus className="w-4 h-4 " />
+          <Plus className="w-4 h-3" />
         </div>
       </div>
 
@@ -202,16 +208,16 @@ function Sticky({ id, text, color, removeNote, editNote }) {
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
             <div className="tooltip tooltip-right tooltip-secondary" data-tip="Delete note">
-            <button onClick={() => removeNote(id)} aria-label="Delete note">
-              <SquareX className="w-5 h-5 text-red-500 hover:text-red-700" />
-            </button>
+              <button onClick={() => removeNote(id)} aria-label="Delete note">
+                <SquareX className="w-5 h-5 text-red-500 hover:text-red-700" />
+              </button>
             </div>
             <div className="tooltip tooltip-right tooltip-secondary" data-tip="Change note's color">
-            <MoreHorizontal
-              className="cursor-pointer"
-              onClick={handleToggleSelector}
-              aria-label="Change color"
-            />
+              <MoreHorizontal
+                className="cursor-pointer"
+                onClick={handleToggleSelector}
+                aria-label="Change color"
+              />
             </div>
           </div>
         </div>

@@ -1,14 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { SquareX } from "lucide-react";
 
 const Canvas = ({ onClose }) => {
-  const KreskaURL = "https://kreska.art/app/";
+  const SumoURL =
+    "https://paint.sumo.app/?parameter=value&another_parameter=another_value";
 
   const clickSound = new Audio("/sounds/mouse-click-sound.mp3");
 
   // AudioContext and buffer for close sound
   const audioContextRef = useRef(null);
   const closeSoundBufferRef = useRef(null);
+
+  const [isClosing, setIsClosing] = useState(false);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -34,23 +38,38 @@ const Canvas = ({ onClose }) => {
     }
   };
 
+  const handleClose = () => {
+    playCloseSound();
+    setIsClosing(true);
+    setTimeout(() => {
+      setVisible(false);
+      if (onClose) onClose();
+    }, 150);
+  };
+
   // Open Sumo Paint in a new tab and play click sound
   const handleOpenFullscreen = () => {
     clickSound.play();
-    window.open(KreskaURL, "_blank");
+    window.open(SumoURL, "_blank");
   };
 
+  if (!visible) return null;
+
   return (
-    <div className="relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-500">
+    <div
+      className={`relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-500
+        ${isClosing ? "opacity-0" : "opacity-100"}`}
+      style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
+    >
       {/* Close button */}
-      <div className="absolute top-0 right-0 m-2">
-        <div className="tooltip tooltip-right tooltip-primary" data-tip="Close">
+      <div className="absolute top-0 right-0 m-2 z-[1050]">
+        <div
+          className="tooltip tooltip-right tooltip-primary z-[1050] relative"
+          data-tip="Close"
+        >
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
-            onClick={() => {
-              playCloseSound();
-              onClose();
-            }}
+            onClick={handleClose}
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -58,15 +77,18 @@ const Canvas = ({ onClose }) => {
       </div>
 
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
-        Kreska Art
+        Sumo Paint
       </h1>
 
-      <div className="w-full h-full rounded overflow-hidden border border-base-300 my-4">
+      <div
+        className="w-full rounded overflow-hidden border border-base-300 my-4"
+        style={{ height: "700px" }}
+      >
         <iframe
-          src={KreskaURL}
-          title="Kreska Art"
+          src={SumoURL}
+          title="Sumo Paint"
           width="100%"
-          height="200%"
+          height="100%"
           style={{ border: "none" }}
           allowFullScreen
         />

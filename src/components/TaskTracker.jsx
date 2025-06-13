@@ -14,6 +14,7 @@ function TaskTracker({ onClose }) {
   const [isClosing, setIsClosing] = useState(false);
 
   const closeSoundRef = useRef(null);
+  const clickSoundRef = useRef(null);
 
   useEffect(() => {
     const storedTasks = localStorage.getItem("taskTrackerData");
@@ -33,6 +34,10 @@ function TaskTracker({ onClose }) {
 
   const addTask = () => {
     if (taskInput.trim()) {
+      if (clickSoundRef.current) {
+        clickSoundRef.current.currentTime = 0;
+        clickSoundRef.current.play();
+      }
       setTasks((prev) => ({
         ...prev,
         [selectedTab]: [
@@ -79,6 +84,12 @@ function TaskTracker({ onClose }) {
     }, 150);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      addTask();
+    }
+  };
+
   const renderTabContent = (tabKey) => (
     <>
       <div className="flex mb-4">
@@ -87,6 +98,7 @@ function TaskTracker({ onClose }) {
           className="input input-bordered border-primary text-white flex-1 mr-2"
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
+          onKeyDown={handleKeyPress}
           placeholder="Enter a task..."
         />
         <button onClick={addTask} className="btn btn-primary">
@@ -162,65 +174,46 @@ function TaskTracker({ onClose }) {
         preload="auto"
       />
 
+      {/* Click Sound */}
+      <audio
+        ref={clickSoundRef}
+        src="/sounds/mouse-click-sound.mp3"
+        preload="auto"
+      />
+
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         To-Do List
       </h1>
 
-      <div className="tabs tabs-lift">
-        <input
-          type="radio"
-          name="my_tabs_3"
-          className={`tab ${
-            selectedTab === "work" ? "tab-active border-primary" : ""
-          }`}
-          aria-label="Work"
-          checked={selectedTab === "work"}
-          onChange={() => handleTabChange("work")}
-        />
+      {/* Badge Tabs */}
+      <div className="flex justify-center gap-2 mb-4 flex-wrap">
         <div
-          className={`tab-content bg-base-100 border p-6 ${
-            selectedTab === "work" ? "border-primary" : "border-base-300"
+          className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
+            selectedTab === "work" ? "badge-primary" : "bg-ghost"
           }`}
+          onClick={() => handleTabChange("work")}
         >
-          {selectedTab === "work" && renderTabContent("work")}
+          Work
         </div>
-
-        <input
-          type="radio"
-          name="my_tabs_3"
-          className={`tab ${
-            selectedTab === "personal" ? "tab-active border-primary" : ""
-          }`}
-          aria-label="Personal"
-          checked={selectedTab === "personal"}
-          onChange={() => handleTabChange("personal")}
-        />
         <div
-          className={`tab-content bg-base-100 border p-6 ${
-            selectedTab === "personal" ? "border-primary" : "border-base-300"
+          className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
+            selectedTab === "personal" ? "badge-secondary" : "bg-ghost"
           }`}
+          onClick={() => handleTabChange("personal")}
         >
-          {selectedTab === "personal" && renderTabContent("personal")}
+          Personal
         </div>
-
-        <input
-          type="radio"
-          name="my_tabs_3"
-          className={`tab ${
-            selectedTab === "education" ? "tab-active border-primary" : ""
-          }`}
-          aria-label="Education"
-          checked={selectedTab === "education"}
-          onChange={() => handleTabChange("education")}
-        />
         <div
-          className={`tab-content bg-base-100 border p-6 ${
-            selectedTab === "education" ? "border-primary" : "border-base-300"
+          className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
+            selectedTab === "education" ? "badge-accent" : "bg-ghost"
           }`}
+          onClick={() => handleTabChange("education")}
         >
-          {selectedTab === "education" && renderTabContent("education")}
+          Education
         </div>
       </div>
+
+      {renderTabContent(selectedTab)}
     </div>
   );
 }

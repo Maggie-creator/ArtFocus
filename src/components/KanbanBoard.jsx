@@ -225,16 +225,20 @@ const KanbanBoard = ({ onClose }) => {
                         </div>
                       )}
                     </div>
-                    <button
-                      className="text-red-500 hover:text-red-400 rounded-full w-6 h-6 flex items-center justify-center"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteTask(key, i);
-                      }}
-                      title="Delete Task"
+                    <div
+                      className="tooltip tooltip-left tooltip-secondary"
+                      data-tip="Delete task"
                     >
-                      <SquareX className="w-4 h-4" />
-                    </button>
+                      <button
+                        className="text-red-500 hover:text-red-400 rounded-full w-6 h-6 flex items-center justify-center"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteTask(key, i);
+                        }}
+                      >
+                        <SquareX className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                   <div className="pt-2 pl-2 font-bold text-base truncate max-w-full">
                     {task.title.length > 100
@@ -337,7 +341,10 @@ const KanbanBoard = ({ onClose }) => {
             <div className="modal-action">
               <button
                 className="btn btn-sm btn-outline"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  if (clickSoundRef.current) clickSoundRef.current.play();
+                  setShowModal(false);
+                }}
               >
                 Cancel
               </button>

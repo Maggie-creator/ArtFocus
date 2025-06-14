@@ -161,7 +161,7 @@ const TimeZoneConverter = ({ onClose }) => {
       </div>
 
       <button
-        className="btn btn-secondary shadow-lg shadow-secondary/50 w-full"
+        className="btn btn-primary shadow-lg shadow-secondary/50 w-full"
         onClick={handleConvert}
       >
         Convert

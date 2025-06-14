@@ -116,7 +116,7 @@ const App = () => {
         />
 
         {/* Group 1 */}
-        <div className="flex flex-wrap justify-center gap-4 p-4">
+        <div className="flex flex-wrap justify-center gap-4 p-10">
           {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
           {showTaskTracker && (
             <TaskTracker onClose={() => setShowTaskTracker(false)} />

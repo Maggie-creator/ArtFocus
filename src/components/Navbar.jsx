@@ -83,7 +83,11 @@ const Navbar = ({
             </label>
             <ul
               tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-300 rounded-box w-64 z-[100] text-base-content"
+              className="dropdown-content menu p-1 shadow bg-base-300 rounded-box w-60 z-[100] text-base-content"
+              style={{
+                width: "auto",
+                maxWidth: "calc(100vw - 2rem)", // Keeps dropdown within viewport with margin
+              }}
             >
               <li>
                 <button onClick={() => onBackgroundChange("background1")}>

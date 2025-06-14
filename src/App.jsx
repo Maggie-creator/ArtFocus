@@ -55,18 +55,19 @@ const backgrounds = {
 const App = () => {
   const [backgroundKey, setBackgroundKey] = useState("background1");
 
-  const [showPomodoro, setShowPomodoro] = useState(false);
-  const [showWorldClock, setShowWorldClock] = useState(false);
-  const [showTimeZoneConverter, setShowTimeZoneConverter] = useState(false); // ✅ ADDED
-  const [showCanvas, setShowCanvas] = useState(false);
-  const [showTaskTracker, setShowTaskTracker] = useState(false);
-  const [showKanban, setShowKanban] = useState(false);
-  const [showQuote, setShowQuote] = useState(false);
-  const [showBriefGenerator, setShowBriefGenerator] = useState(false);
-  const [showReferenceImages, setShowReferenceImages] = useState(false);
-  const [showYoutube, setShowYoutube] = useState(false);
-  const [showStickyNotes, setShowStickyNotes] = useState(false);
-  const [showCalendar, setShowCalendar] = useState(false);
+  // All components shown by default (initial state = true)
+  const [showPomodoro, setShowPomodoro] = useState(true);
+  const [showWorldClock, setShowWorldClock] = useState(true);
+  const [showTimeZoneConverter, setShowTimeZoneConverter] = useState(true);
+  const [showCanvas, setShowCanvas] = useState(true);
+  const [showTaskTracker, setShowTaskTracker] = useState(true);
+  const [showKanban, setShowKanban] = useState(true);
+  const [showQuote, setShowQuote] = useState(true);
+  const [showBriefGenerator, setShowBriefGenerator] = useState(true);
+  const [showReferenceImages, setShowReferenceImages] = useState(true);
+  const [showYoutube, setShowYoutube] = useState(true);
+  const [showStickyNotes, setShowStickyNotes] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(true);
 
   useEffect(() => {
     const savedKey = localStorage.getItem("selectedBackground");

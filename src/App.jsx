@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Pomodoro from "./components/Pomodoro";
 import TaskTracker from "./components/TaskTracker";
 import BriefGenerator from "./components/BriefGenerator";
@@ -13,81 +13,161 @@ import KanbanBoard from "./components/KanbanBoard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+// 🎨 Backgrounds data
+const backgrounds = {
+  background1: {
+    image:
+      "https://cdna.artstation.com/p/assets/images/images/087/475/468/large/-0429.jpg?1745894356",
+    artist: "秋刀鱼",
+    link: "https://www.artstation.com/artwork/OvRX2v",
+    name: "Sketch of the Day",
+  },
+  lost_land_fairy_land: {
+    image:
+      "https://cdnb.artstation.com/p/assets/images/images/087/437/457/large/qing-ying-20250427-093915.jpg?1745802113",
+    artist: "qing ying",
+    link: "https://www.artstation.com/artwork/L4bEVr",
+    name: "Lost Land, Fairy Land",
+  },
+  lost_in_between: {
+    image:
+      "https://cdnb.artstation.com/p/assets/images/images/037/521/205/large/alena-aenami-lost-1k.jpg?1620609020",
+    artist: "Alena Aenami",
+    link: "https://www.artstation.com/artwork/J91ZxD",
+    name: "Lost in Between",
+  },
+  A_Floating_City: {
+    image:
+      "https://cdnb.artstation.com/p/assets/images/images/051/015/853/large/elias-stern-a-floating-city.jpg?1656261682",
+    artist: "Elias Stern",
+    link: "https://www.artstation.com/artwork/b5ZdVm",
+    name: "A Floating City",
+  },
+  Quiet_Day: {
+    image:
+      "https://cdnb.artstation.com/p/assets/images/images/014/591/729/4k/sergey-vasnev-fallen-ship.jpg?1544618232",
+    artist: "Sergey Vasnev",
+    link: "https://www.artstation.com/artwork/balnLG",
+    name: "Quiet Day",
+  },
+};
+
 const App = () => {
-  const [showPomodoro, setShowPomodoro] = useState(true);
-  const [showCalendar, setShowCalendar] = useState(true);
-  const [showWorldClock, setShowWorldClock] = useState(true);
-  const [showCanvas, setShowCanvas] = useState(true);
-  const [showTaskTracker, setShowTaskTracker] = useState(true);
-  const [showKanban, setShowKanban] = useState(true);
-  const [showQuote, setShowQuote] = useState(true);
-  const [showBriefGenerator, setShowBriefGenerator] = useState(true);
-  const [showReferenceImages, setShowReferenceImages] = useState(true);
-  const [showYoutube, setShowYoutube] = useState(true);
-  const [showStickyNotes, setShowStickyNotes] = useState(true);
+  const [backgroundKey, setBackgroundKey] = useState("background1");
 
-  const [backgroundName, setBackgroundName] = useState("");
-  const [backgroundArtist, setBackgroundArtist] = useState("");
-  const [backgroundLink, setBackgroundLink] = useState("");
+  const [showPomodoro, setShowPomodoro] = useState(false);
+  const [showWorldClock, setShowWorldClock] = useState(false);
+  const [showTimeZoneConverter, setShowTimeZoneConverter] = useState(false); // ✅ ADDED
+  const [showCanvas, setShowCanvas] = useState(false);
+  const [showTaskTracker, setShowTaskTracker] = useState(false);
+  const [showKanban, setShowKanban] = useState(false);
+  const [showQuote, setShowQuote] = useState(false);
+  const [showBriefGenerator, setShowBriefGenerator] = useState(false);
+  const [showReferenceImages, setShowReferenceImages] = useState(false);
+  const [showYoutube, setShowYoutube] = useState(false);
+  const [showStickyNotes, setShowStickyNotes] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
 
-  const handleBackgroundChange = (bgName, artist, link) => {
-    setBackgroundName(bgName);
-    setBackgroundArtist(artist);
-    setBackgroundLink(link);
-    document.body.style.backgroundImage = `url(/backgrounds/${bgName}.jpg)`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundPosition = "center";
-    document.body.style.transition = "background-image 0.5s ease-in-out";
+  useEffect(() => {
+    const savedKey = localStorage.getItem("selectedBackground");
+    if (savedKey && backgrounds[savedKey]) {
+      setBackgroundKey(savedKey);
+    }
+  }, []);
+
+  const handleBackgroundChange = (key) => {
+    setBackgroundKey(key);
+    localStorage.setItem("selectedBackground", key);
   };
 
+  const currentBackground = backgrounds[backgroundKey];
+
   return (
-    <div className="min-h-screen bg-base-200 p-4 pb-20">
-      <Navbar
-        onTogglePomodoro={() => setShowPomodoro((prev) => !prev)}
-        onToggleCalendar={() => setShowCalendar((prev) => !prev)}
-        onToggleWorldClock={() => setShowWorldClock((prev) => !prev)}
-        onToggleCanvas={() => setShowCanvas((prev) => !prev)}
-        onToggleTaskTracker={() => setShowTaskTracker((prev) => !prev)}
-        onToggleKanbanBoard={() => setShowKanban((prev) => !prev)}
-        onToggleQuote={() => setShowQuote((prev) => !prev)}
-        onToggleBriefGenerator={() => setShowBriefGenerator((prev) => !prev)}
-        onToggleReferenceImages={() => setShowReferenceImages((prev) => !prev)}
-        onToggleYoutube={() => setShowYoutube((prev) => !prev)}
-        onToggleStickyNotes={() => setShowStickyNotes((prev) => !prev)}
-        onBackgroundChange={handleBackgroundChange}
+    <div className="relative min-h-screen w-full">
+      {/* Background */}
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-fixed"
+        style={{ backgroundImage: `url(${currentBackground.image})` }}
       />
 
-      <div className="flex flex-wrap justify-center gap-4 p-4">
-        {showPomodoro && <Pomodoro />}
-        {showTaskTracker && <TaskTracker />}
-        {showStickyNotes && <StickyNotes />}
-      </div>
+      {/* Foreground Content */}
+      <div className="relative z-10 min-h-screen">
+        <Navbar
+          onToggleBriefGenerator={() =>
+            setShowBriefGenerator(!showBriefGenerator)
+          }
+          onTogglePomodoro={() => setShowPomodoro(!showPomodoro)}
+          onToggleWorldClock={() => setShowWorldClock(!showWorldClock)}
+          onToggleCanvas={() => setShowCanvas(!showCanvas)}
+          onToggleTaskTracker={() => setShowTaskTracker(!showTaskTracker)}
+          onToggleKanbanBoard={() => setShowKanban(!showKanban)}
+          onToggleQuote={() => setShowQuote(!showQuote)}
+          onToggleReferenceImages={() =>
+            setShowReferenceImages(!showReferenceImages)
+          }
+          onToggleYoutube={() => setShowYoutube(!showYoutube)}
+          onToggleStickyNotes={() => setShowStickyNotes(!showStickyNotes)}
+          onToggleTimeZoneConverter={() =>
+            setShowTimeZoneConverter(!showTimeZoneConverter)
+          }
+          onBackgroundChange={handleBackgroundChange}
+          backgrounds={backgrounds}
+        />
 
-      <div className="flex justify-center p-4">
-        <div className="lg:basis-[1188px] max-w-full sm:w-96">
-          {showKanban && <KanbanBoard onClose={() => setShowKanban(false)} />}
+        {/* Group 1 */}
+        <div className="flex flex-wrap justify-center gap-4 p-4">
+          {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
+          {showTaskTracker && (
+            <TaskTracker onClose={() => setShowTaskTracker(false)} />
+          )}
+          {showStickyNotes && (
+            <StickyNotes onClose={() => setShowStickyNotes(false)} />
+          )}
         </div>
-      </div>
 
-      <div className="flex flex-wrap justify-center gap-4 p-4">
-        {showWorldClock && <WorldClock />}
-        {showCalendar && <TimeZoneConverter />}
-        {showQuote && <Quote />}
-      </div>
-
-      <div className="flex flex-wrap justify-center gap-4 p-4">
-        {showReferenceImages && <ReferenceImages />}
-        {showBriefGenerator && <BriefGenerator />}
-        {showYoutube && <YouTube />}
-      </div>
-
-      <div className="flex justify-center p-4">
-        <div className="lg:basis-[1188px] max-w-full sm:w-96">
-          {showCanvas && <Canvas />}
+        {/* Kanban */}
+        <div className="flex justify-center p-4">
+          <div className="lg:basis-[1188px] max-w-full sm:w-96">
+            {showKanban && <KanbanBoard onClose={() => setShowKanban(false)} />}
+          </div>
         </div>
-      </div>
 
-      <Footer artist={backgroundArtist} link={backgroundLink} />
+        {/* Group 2 */}
+        <div className="flex flex-wrap justify-center gap-4 p-4">
+          {showWorldClock && (
+            <WorldClock onClose={() => setShowWorldClock(false)} />
+          )}
+          {showTimeZoneConverter && (
+            <TimeZoneConverter
+              onClose={() => setShowTimeZoneConverter(false)}
+            />
+          )}
+          {showQuote && <Quote onClose={() => setShowQuote(false)} />}
+        </div>
+
+        {/* Group 3 */}
+        <div className="flex flex-wrap justify-center gap-4 p-4">
+          {showReferenceImages && (
+            <ReferenceImages onClose={() => setShowReferenceImages(false)} />
+          )}
+          {showBriefGenerator && (
+            <BriefGenerator onClose={() => setShowBriefGenerator(false)} />
+          )}
+          {showYoutube && <YouTube onClose={() => setShowYoutube(false)} />}
+        </div>
+
+        {/* Canvas */}
+        <div className="flex justify-center p-4">
+          <div className="lg:basis-[1188px] max-w-full sm:w-96">
+            {showCanvas && <Canvas onClose={() => setShowCanvas(false)} />}
+          </div>
+        </div>
+
+        <Footer
+          artist={currentBackground.artist}
+          link={currentBackground.link}
+        />
+      </div>
     </div>
   );
 };

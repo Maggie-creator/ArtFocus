@@ -268,14 +268,14 @@ const KanbanBoard = ({ onClose }) => {
             <input
               type="text"
               placeholder="Title"
-              className="input input-bordered input-md w-full mb-3 text-black bg-white"
+              className="input input-bordered border-primary input-md w-full mb-3"
               value={newTaskData.title}
               onChange={(e) =>
                 setNewTaskData({ ...newTaskData, title: e.target.value })
               }
             />
             <textarea
-              className="textarea textarea-bordered w-full h-24 text-sm text-black mb-3 bg-white"
+              className="textarea textarea-bordered border-primary w-full h-24 text-sm mb-3"
               placeholder="Description"
               value={newTaskData.description}
               onChange={(e) =>
@@ -287,7 +287,7 @@ const KanbanBoard = ({ onClose }) => {
               <input
                 type="text"
                 placeholder="Deadline (dd/mm/yyyy)"
-                className="input input-sm input-bordered text-black bg-white w-full"
+                className="input input-sm input-bordered border-primary w-full"
                 value={newTaskData.deadline}
                 onChange={(e) =>
                   setNewTaskData({ ...newTaskData, deadline: e.target.value })
@@ -300,7 +300,7 @@ const KanbanBoard = ({ onClose }) => {
                   Priority
                 </label>
                 <select
-                  className="select select-bordered w-full text-black bg-white"
+                  className="select select-bordered border-primary w-full"
                   value={newTaskData.priority}
                   onChange={(e) =>
                     setNewTaskData({ ...newTaskData, priority: e.target.value })
@@ -319,7 +319,7 @@ const KanbanBoard = ({ onClose }) => {
                   Status
                 </label>
                 <select
-                  className="select select-bordered w-full text-black bg-white"
+                  className="select select-bordered border-primary w-full"
                   value={newTaskData.status}
                   onChange={(e) =>
                     setNewTaskData({ ...newTaskData, status: e.target.value })

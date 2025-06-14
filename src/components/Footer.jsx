@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = ({ artist, link }) => {
   return (
-    <footer className="footer sm:footer-horizontal text-neutral-content items-center p-4 fixed bottom-0 left-0 w-full z-50 backdrop-blur-sm bg-neutral/60">
+    <footer className="footer sticky sm:footer-horizontal text-neutral-content items-center p-4 fixed bottom-0 left-0 w-full z-50 backdrop-blur-sm bg-neutral/60">
       <aside className="grid-flow-col items-center">
         <img
           src="/icons/Artfocus_logo2.png"

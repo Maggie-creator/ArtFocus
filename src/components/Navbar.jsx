@@ -2,6 +2,7 @@ import React from "react";
 import {
   TimerReset,
   Clock10,
+  Earth,
   Palette,
   ListChecks,
   Kanban,
@@ -16,6 +17,7 @@ const Navbar = ({
   onToggleBriefGenerator,
   onTogglePomodoro,
   onToggleWorldClock,
+  onToggleTimeZoneConverter,
   onToggleCanvas,
   onToggleTaskTracker,
   onToggleKanbanBoard,
@@ -27,15 +29,16 @@ const Navbar = ({
 }) => {
   const tools = [
     ["Pomodoro Timer", TimerReset, onTogglePomodoro],
-    ["World Clock", Clock10, onToggleWorldClock],
-    ["Sumo Paint", Palette, onToggleCanvas],
-    ["Task Tracker", ListChecks, onToggleTaskTracker],
-    ["Kanban Board", Kanban, onToggleKanbanBoard],
-    ["Quote", Quote, onToggleQuote],
-    ["Brief Generator", Lightbulb, onToggleBriefGenerator],
-    ["Reference Images", FileImage, onToggleReferenceImages],
-    ["Youtube", MonitorPlay, onToggleYoutube],
+    ["Sticky Notes", ListChecks, onToggleTaskTracker],
     ["Sticky Notes", NotebookPen, onToggleStickyNotes],
+    ["Kanban Board", Kanban, onToggleKanbanBoard],
+    ["World Clock", Earth, onToggleWorldClock],
+    ["Time Zone Converter", Clock10, onToggleTimeZoneConverter],
+    ["Quote", Quote, onToggleQuote],
+    ["Reference Images", FileImage, onToggleReferenceImages],
+    ["Brief Generator", Lightbulb, onToggleBriefGenerator],
+    ["Youtube", MonitorPlay, onToggleYoutube],
+    ["Sumo Paint", Palette, onToggleCanvas],
   ];
 
   return (
@@ -73,10 +76,10 @@ const Navbar = ({
           <div className="dropdown dropdown-start z-[100]">
             <label
               tabIndex={0}
-              className="btn btn-accent btn-outline tooltip tooltip-bottom tooltip-secondary"
+              className="btn btn-accent btn-outline tooltip tooltip-bottom tooltip-secondary flex justify-center items-center"
               data-tip="Change Background"
             >
-              🎨
+              <span className="text-lg">🎨</span>
             </label>
             <ul
               tabIndex={0}
@@ -88,7 +91,9 @@ const Navbar = ({
                 </button>
               </li>
               <li>
-                <button onClick={() => onBackgroundChange("lost_land_fairy_land")}>
+                <button
+                  onClick={() => onBackgroundChange("lost_land_fairy_land")}
+                >
                   <span className="italic">"Lost Land, Fairy Land"</span>
                 </button>
               </li>

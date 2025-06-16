@@ -84,7 +84,7 @@ const App = () => {
   const currentBackground = backgrounds[backgroundKey];
 
   return (
-    <div className="relative min-h-screen w-full">
+    <div className="relative min-h-screen w-full overflow-x-hidden">
       {/* Background */}
       <div
         className="fixed inset-0 -z-10 bg-cover bg-center bg-fixed"
@@ -92,7 +92,7 @@ const App = () => {
       />
 
       {/* Foreground Content */}
-      <div className="relative z-9999 min-h-screen">
+      <div className="relative z-[9999] min-h-screen w-full overflow-x-hidden">
         <Navbar
           onToggleBriefGenerator={() =>
             setShowBriefGenerator(!showBriefGenerator)
@@ -116,7 +116,7 @@ const App = () => {
         />
 
         {/* Group 1 */}
-        <div className="flex flex-wrap justify-center gap-4 p-10">
+        <div className="flex flex-wrap justify-center gap-4 p-4">
           {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
           {showTaskTracker && (
             <TaskTracker onClose={() => setShowTaskTracker(false)} />
@@ -128,7 +128,7 @@ const App = () => {
 
         {/* Kanban */}
         <div className="flex justify-center p-4">
-          <div className="lg:basis-[1188px] max-w-full sm:w-96">
+          <div className="lg:basis-[1188px] max-w-full w-full">
             {showKanban && <KanbanBoard onClose={() => setShowKanban(false)} />}
           </div>
         </div>
@@ -159,12 +159,12 @@ const App = () => {
 
         {/* Canvas */}
         <div className="flex justify-center p-4">
-          <div className="lg:basis-[1188px] max-w-full xsm:w-96">
+          <div className="lg:basis-[1188px] max-w-full w-full">
             {showCanvas && <Canvas onClose={() => setShowCanvas(false)} />}
           </div>
         </div>
 
-        {/* Footer with z-9999 */}
+        {/* Footer */}
         <div className="fixed bottom-0 left-0 w-full z-[9999]">
           <Footer
             artist={currentBackground.artist}

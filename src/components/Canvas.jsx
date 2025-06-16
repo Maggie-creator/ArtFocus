@@ -2,17 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import { SquareX } from "lucide-react";
 
 const Canvas = ({ onClose }) => {
-  const SumoURL =
+  const SUMO_PAINT_URL =
     "https://paint.sumo.app/?parameter=value&another_parameter=another_value";
+  const SUMO_3D_URL = "https://3d.sumo.app/?lang=en";
 
   const clickSound = new Audio("/sounds/mouse-click-sound.mp3");
 
-  // AudioContext and buffer for close sound
   const audioContextRef = useRef(null);
   const closeSoundBufferRef = useRef(null);
 
   const [isClosing, setIsClosing] = useState(false);
   const [visible, setVisible] = useState(true);
+  const [selectedTool, setSelectedTool] = useState("Sumo Paint");
+
+  const softwareMap = {
+    "Sumo Paint": SUMO_PAINT_URL,
+    "Sumo 3D": SUMO_3D_URL,
+  };
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -47,10 +53,14 @@ const Canvas = ({ onClose }) => {
     }, 150);
   };
 
-  // Open Sumo Paint in a new tab and play click sound
   const handleOpenFullscreen = () => {
     clickSound.play();
-    window.open(SumoURL, "_blank");
+    window.open(softwareMap[selectedTool], "_blank");
+  };
+
+  const handleToolChange = (e) => {
+    clickSound.play();
+    setSelectedTool(e.target.value);
   };
 
   if (!visible) return null;
@@ -76,17 +86,31 @@ const Canvas = ({ onClose }) => {
         </div>
       </div>
 
-      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
-        Sumo Paint
+      {/* Software title */}
+      <h1 className="text-2xl font-semibold mb-2 text-center permanent-marker p-4">
+        {selectedTool}
       </h1>
 
+      {/* Tool selection dropdown */}
+      <button className="btn btn-secondary">
+        <select
+          className="bg-transparent w-full"
+          value={selectedTool}
+          onChange={handleToolChange}
+        >
+          <option className="bg-base-100">Sumo Paint</option>
+          <option className="bg-base-100">Sumo 3D</option>
+        </select>
+      </button>
+
+      {/* Iframe preview */}
       <div
         className="w-full rounded overflow-hidden border border-base-300 my-4"
         style={{ height: "700px" }}
       >
         <iframe
-          src={SumoURL}
-          title="Sumo Paint"
+          src={softwareMap[selectedTool]}
+          title={selectedTool}
           width="100%"
           height="100%"
           style={{ border: "none" }}
@@ -94,6 +118,7 @@ const Canvas = ({ onClose }) => {
         />
       </div>
 
+      {/* Fullscreen button */}
       <div className="card-actions justify-end mt-4 w-full">
         <button
           className="btn btn-primary w-full px-6 py-3 shadow-lg shadow-primary/50"

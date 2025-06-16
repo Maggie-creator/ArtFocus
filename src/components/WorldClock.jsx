@@ -149,15 +149,15 @@ const WorldClock = ({ onClose }) => {
 
   return (
     <div
-      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[9000]
+      className={`card card-border bg-base-100 max-h-[90vh] overflow-y-auto w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[8000]
         ${isClosing ? "opacity-0" : "opacity-100"}
       `}
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
     >
       {/* Close Button */}
-      <div className="absolute top-0 right-0 m-2 z-[9999]">
+      <div className="absolute top-0 right-0 m-2 z-[9000]">
         <div
-          className="tooltip tooltip-right tooltip-primary z-[9999]"
+          className="tooltip tooltip-right tooltip-primary z-[9000]"
           data-tip="Close"
         >
           <button
@@ -199,7 +199,7 @@ const WorldClock = ({ onClose }) => {
       </div>
 
       {/* Time Zone Input */}
-      <div className="mb-4 relative z-[9999]">
+      <div className="mb-4 relative z-[9000]">
         <input
           type="text"
           className="input input-border border-primary w-full bg-base-10 text-white"
@@ -209,7 +209,7 @@ const WorldClock = ({ onClose }) => {
           onKeyDown={handleZoneKeyDown}
         />
         {zoneSuggestions.length > 0 && (
-          <ul className="absolute z-[9999] bg-gray-900 text-white w-full mt-1 rounded shadow max-h-40 overflow-y-auto text-left border border-base-300">
+          <ul className="absolute z-[9000] bg-gray-900 text-white w-full mt-1 rounded shadow max-h-40 overflow-y-auto text-left border border-base-300">
             {zoneSuggestions.map((suggestion, index) => (
               <li
                 key={suggestion}
@@ -250,9 +250,9 @@ const WorldClock = ({ onClose }) => {
                 {times[city] || "--:--:--"}
               </div>
             </div>
-            <div className="absolute top-1 right-1 z-[9999]">
+            <div className="absolute top-1 right-1 z-[9000]">
               <div
-                className="tooltip tooltip-left tooltip-error z-[9999]"
+                className="tooltip tooltip-left tooltip-error z-[9000]"
                 data-tip="Remove City"
               >
                 <button

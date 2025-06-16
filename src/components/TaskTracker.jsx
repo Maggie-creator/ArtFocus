@@ -151,12 +151,15 @@ function TaskTracker({ onClose }) {
     <div
       className={`relative z-[60] card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
-      }`}
+      } pb-20`} // <-- Added padding-bottom to prevent overlap with fixed footer
       style={{ willChange: "opacity" }}
     >
       {/* Close Button with Tooltip */}
       <div className="absolute top-0 right-0 m-2 z-[999]">
-        <div className="tooltip tooltip-right tooltip-primary z-[999]" data-tip="Close">
+        <div
+          className="tooltip tooltip-right tooltip-primary z-[999]"
+          data-tip="Close"
+        >
           <button
             className="cursor-pointer text-red-500 hover:text-red-700 z-[999]"
             onClick={handleClose}

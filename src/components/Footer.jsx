@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = ({ artist, link }) => {
   return (
-    <footer className="footer sticky sm:footer-horizontal text-neutral-content items-center p-4 bottom-0 left-0 w-full z-9999 backdrop-blur-sm bg-neutral/60">
+    <footer className="footer sticky sm:footer-horizontal text-neutral-content items-center p-4 bottom-0 left-0 w-full z-[9999] backdrop-blur-sm bg-neutral/60">
       <aside className="grid-flow-col items-center">
         <img
           src="/icons/Artfocus_logo2.png"
@@ -40,7 +40,7 @@ const Footer = ({ artist, link }) => {
 
         {/* Support Me Modal Button */}
         <button
-          className="btn btn-info btn-sm text-sm"
+          className="btn btn-info btn-sm text-xs"
           onClick={() => document.getElementById("my_modal_6").showModal()}
         >
           Support me!

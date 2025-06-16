@@ -58,7 +58,7 @@ const Navbar = ({
           {tools.map(([tip, Icon, handler]) => (
             <div
               key={tip}
-              className="tooltip tooltip-bottom tooltip-secondary z-[100]"
+              className="tooltip tooltip-bottom tooltip-secondary z-[9999]"
               data-tip={tip}
             >
               <button

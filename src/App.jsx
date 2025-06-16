@@ -55,7 +55,6 @@ const backgrounds = {
 const App = () => {
   const [backgroundKey, setBackgroundKey] = useState("background1");
 
-  // All components shown by default (initial state = true)
   const [showPomodoro, setShowPomodoro] = useState(true);
   const [showWorldClock, setShowWorldClock] = useState(true);
   const [showTimeZoneConverter, setShowTimeZoneConverter] = useState(true);
@@ -91,8 +90,8 @@ const App = () => {
         style={{ backgroundImage: `url(${currentBackground.image})` }}
       />
 
-      {/* Foreground Content */}
-      <div className="relative z-[9999] min-h-screen w-full overflow-x-hidden">
+      {/* Sticky Navbar */}
+      <div className="fixed top-0 left-0 w-full z-[9999]">
         <Navbar
           onToggleBriefGenerator={() =>
             setShowBriefGenerator(!showBriefGenerator)
@@ -114,7 +113,10 @@ const App = () => {
           onBackgroundChange={handleBackgroundChange}
           backgrounds={backgrounds}
         />
+      </div>
 
+      {/* Foreground Content */}
+      <div className="relative z-[9998] min-h-screen w-full overflow-x-hidden pt-[80px] pb-[60px]">
         {/* Group 1 */}
         <div className="flex flex-wrap justify-center gap-4 p-4">
           {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
@@ -163,14 +165,14 @@ const App = () => {
             {showCanvas && <Canvas onClose={() => setShowCanvas(false)} />}
           </div>
         </div>
+      </div>
 
-        {/* Footer */}
-        <div className="fixed bottom-0 left-0 w-full z-[9999]">
-          <Footer
-            artist={currentBackground.artist}
-            link={currentBackground.link}
-          />
-        </div>
+      {/* Sticky Footer */}
+      <div className="fixed bottom-0 left-0 w-full z-[9999]">
+        <Footer
+          artist={currentBackground.artist}
+          link={currentBackground.link}
+        />
       </div>
     </div>
   );

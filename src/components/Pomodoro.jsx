@@ -104,7 +104,7 @@ function Pomodoro({ onClose }) {
 
   return (
     <div
-      className={`z-[999] card card-border bg-base-100 w-96 p-4 relative transition-opacity duration-150 ${
+      className={`z-[900] card card-border bg-base-100 w-96 p-4 relative transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
     >

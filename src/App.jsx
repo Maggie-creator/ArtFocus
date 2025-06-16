@@ -159,15 +159,18 @@ const App = () => {
 
         {/* Canvas */}
         <div className="flex justify-center p-4">
-          <div className="lg:basis-[1188px] max-w-full sm:w-96">
+          <div className="lg:basis-[1188px] max-w-full xsm:w-96">
             {showCanvas && <Canvas onClose={() => setShowCanvas(false)} />}
           </div>
         </div>
 
-        <Footer
-          artist={currentBackground.artist}
-          link={currentBackground.link}
-        />
+        {/* Footer with z-9999 */}
+        <div className="fixed bottom-0 left-0 w-full z-[9999]">
+          <Footer
+            artist={currentBackground.artist}
+            link={currentBackground.link}
+          />
+        </div>
       </div>
     </div>
   );

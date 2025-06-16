@@ -92,7 +92,7 @@ const App = () => {
       />
 
       {/* Foreground Content */}
-      <div className="relative z-999 min-h-screen">
+      <div className="relative z-9999 min-h-screen">
         <Navbar
           onToggleBriefGenerator={() =>
             setShowBriefGenerator(!showBriefGenerator)

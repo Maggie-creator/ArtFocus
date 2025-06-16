@@ -149,14 +149,17 @@ const WorldClock = ({ onClose }) => {
 
   return (
     <div
-      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[9999]
+      className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[9000]
         ${isClosing ? "opacity-0" : "opacity-100"}
       `}
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
     >
       {/* Close Button */}
       <div className="absolute top-0 right-0 m-2 z-[9999]">
-        <div className="tooltip tooltip-right tooltip-primary z-[9999]" data-tip="Close">
+        <div
+          className="tooltip tooltip-right tooltip-primary z-[9999]"
+          data-tip="Close"
+        >
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
@@ -167,8 +170,16 @@ const WorldClock = ({ onClose }) => {
       </div>
 
       {/* Sounds */}
-      <audio ref={clickSoundRef} src="/sounds/mouse-click-sound.mp3" preload="auto" />
-      <audio ref={closeSoundRef} src="/sounds/notebook-close-83836.mp3" preload="auto" />
+      <audio
+        ref={clickSoundRef}
+        src="/sounds/mouse-click-sound.mp3"
+        preload="auto"
+      />
+      <audio
+        ref={closeSoundRef}
+        src="/sounds/notebook-close-83836.mp3"
+        preload="auto"
+      />
 
       {/* Title */}
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
@@ -232,13 +243,18 @@ const WorldClock = ({ onClose }) => {
         {timeZones.map(({ city }) => (
           <div key={city} className="relative flex justify-center">
             <div className="card bg-base-300 p-4 w-full items-center justify-center rounded-xl shadow-lg text-center">
-              <h3 className="text-xl font-semibold mb-2 text-primary">{city}</h3>
+              <h3 className="text-xl font-semibold mb-2 text-primary">
+                {city}
+              </h3>
               <div className="text-base font-sans text-white">
                 {times[city] || "--:--:--"}
               </div>
             </div>
             <div className="absolute top-1 right-1 z-[9999]">
-              <div className="tooltip tooltip-left tooltip-error z-[9999]" data-tip="Remove City">
+              <div
+                className="tooltip tooltip-left tooltip-error z-[9999]"
+                data-tip="Remove City"
+              >
                 <button
                   className="text-red-500 hover:text-red-700 p-1"
                   onClick={() => removeCity(city)}

@@ -42,7 +42,7 @@ const Navbar = ({
   ];
 
   return (
-    <div className="navbar px-4 sticky top-0 z-[100] backdrop-blur-sm">
+    <div className="navbar px-4 sticky top-0 z-[9999] backdrop-blur-sm">
       {/* Navbar Start */}
       <div className="navbar-start">
         <img
@@ -73,7 +73,7 @@ const Navbar = ({
           <div className="divider divider-horizontal"></div>
 
           {/* Background Selector */}
-          <div className="dropdown dropdown-start z-[100]">
+          <div className="dropdown dropdown-start z-[9999]">
             <label
               tabIndex={0}
               className="btn btn-accent btn-outline tooltip tooltip-bottom tooltip-secondary flex justify-center items-center"

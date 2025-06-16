@@ -220,8 +220,6 @@ function BriefGenerator({ onClose }) {
               </div>
             </>
           ) : (
-
-
             <div className="p-4">
               <div className="mb-2">
                 <span className="badge badge-primary mt-4 mb-2">Theme:</span>{" "}
@@ -244,7 +242,8 @@ function BriefGenerator({ onClose }) {
                 {brief.colorScheme}
               </div>
               <div className="mb-2">
-                <span className="badge badge-primary mb-2">Type:</span> {brief.type}
+                <span className="badge badge-primary mb-2">Type:</span>{" "}
+                {brief.type}
               </div>
             </div>
           )}

@@ -71,7 +71,7 @@ const TimeZoneConverter = ({ onClose }) => {
 
   return (
     <div
-      className={`card card-border bg-base-100 w-96 p-4 relative shadow-xl shadow-neutral-950/50 text-base-content z-[1050]
+      className={`card card-border bg-base-100 w-96 p-4 relative shadow-xl shadow-neutral-950/50 text-base-content  z-[100]
         ${isClosing ? "opacity-0" : "opacity-100"}
       `}
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}

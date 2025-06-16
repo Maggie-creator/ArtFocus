@@ -90,18 +90,31 @@ function TaskTracker({ onClose }) {
     }
   };
 
+  // Determine styles dynamically
+  const inputBorderClass = {
+    work: "border-primary",
+    personal: "border-secondary",
+    education: "border-accent",
+  }[selectedTab];
+
+  const addButtonClass = {
+    work: "btn-primary",
+    personal: "btn-secondary",
+    education: "btn-accent",
+  }[selectedTab];
+
   const renderTabContent = (tabKey) => (
     <>
-      <div className="flex mb-4">
+      <div className="flex mb-4 pt-4">
         <input
           type="text"
-          className="input input-bordered border-primary text-white flex-1 mr-2"
+          className={`input input-bordered ${inputBorderClass} text-white flex-1 mr-2`}
           value={taskInput}
           onChange={(e) => setTaskInput(e.target.value)}
           onKeyDown={handleKeyPress}
           placeholder="Enter a task..."
         />
-        <button onClick={addTask} className="btn btn-primary">
+        <button onClick={addTask} className={`btn ${addButtonClass}`}>
           Add
         </button>
       </div>
@@ -151,7 +164,7 @@ function TaskTracker({ onClose }) {
     <div
       className={`relative z-[60] card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
-      } pb-20`} // <-- Added padding-bottom to prevent overlap with fixed footer
+      } pb-20`}
       style={{ willChange: "opacity" }}
     >
       {/* Close Button with Tooltip */}

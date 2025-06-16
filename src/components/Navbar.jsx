@@ -29,7 +29,7 @@ const Navbar = ({
 }) => {
   const tools = [
     ["Pomodoro Timer", TimerReset, onTogglePomodoro],
-    ["Sticky Notes", ListChecks, onToggleTaskTracker],
+    ["To-Do List", ListChecks, onToggleTaskTracker],
     ["Sticky Notes", NotebookPen, onToggleStickyNotes],
     ["Kanban Board", Kanban, onToggleKanbanBoard],
     ["World Clock", Earth, onToggleWorldClock],
@@ -38,7 +38,7 @@ const Navbar = ({
     ["Reference Images", FileImage, onToggleReferenceImages],
     ["Brief Generator", Lightbulb, onToggleBriefGenerator],
     ["Youtube", MonitorPlay, onToggleYoutube],
-    ["Sumo Paint", Palette, onToggleCanvas],
+    ["Sumo Paint / Sumo 3D", Palette, onToggleCanvas],
   ];
 
   return (
@@ -58,7 +58,7 @@ const Navbar = ({
           {tools.map(([tip, Icon, handler]) => (
             <div
               key={tip}
-              className="tooltip tooltip-bottom tooltip-secondary z-[9999]"
+              className="sm:tooltip sm:tooltip-bottom sm:tooltip-secondary z-[9999]"
               data-tip={tip}
             >
               <button

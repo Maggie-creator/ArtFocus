@@ -118,7 +118,7 @@ const App = () => {
       {/* Foreground Content */}
       <div className="relative z-[9998] min-h-screen w-full overflow-x-hidden pt-[80px] pb-[60px]">
         {/* Group 1 */}
-        <div className="flex flex-wrap justify-center gap-4 p-4">
+        <div className="flex flex-wrap justify-center gap-4 pt-10 pb-4">
           {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
           {showTaskTracker && (
             <TaskTracker onClose={() => setShowTaskTracker(false)} />

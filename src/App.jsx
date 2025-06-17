@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Pomodoro from "./components/Pomodoro";
 import TaskTracker from "./components/TaskTracker";
 import BriefGenerator from "./components/BriefGenerator";
@@ -13,7 +13,6 @@ import KanbanBoard from "./components/KanbanBoard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
-// 🎨 Backgrounds data
 const backgrounds = {
   background1: {
     image:
@@ -54,6 +53,11 @@ const backgrounds = {
 
 const App = () => {
   const [backgroundKey, setBackgroundKey] = useState("background1");
+  const [navbarHeight, setNavbarHeight] = useState(0);
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  const navbarRef = useRef(null);
+  const footerRef = useRef(null);
 
   const [showPomodoro, setShowPomodoro] = useState(true);
   const [showWorldClock, setShowWorldClock] = useState(true);
@@ -66,13 +70,21 @@ const App = () => {
   const [showReferenceImages, setShowReferenceImages] = useState(true);
   const [showYoutube, setShowYoutube] = useState(true);
   const [showStickyNotes, setShowStickyNotes] = useState(true);
-  const [showCalendar, setShowCalendar] = useState(true);
 
   useEffect(() => {
     const savedKey = localStorage.getItem("selectedBackground");
     if (savedKey && backgrounds[savedKey]) {
       setBackgroundKey(savedKey);
     }
+
+    const updateHeights = () => {
+      if (navbarRef.current) setNavbarHeight(navbarRef.current.offsetHeight);
+      if (footerRef.current) setFooterHeight(footerRef.current.offsetHeight);
+    };
+
+    updateHeights();
+    window.addEventListener("resize", updateHeights);
+    return () => window.removeEventListener("resize", updateHeights);
   }, []);
 
   const handleBackgroundChange = (key) => {
@@ -91,7 +103,7 @@ const App = () => {
       />
 
       {/* Sticky Navbar */}
-      <div className="fixed top-0 left-0 w-full z-[9999]">
+      <div ref={navbarRef} className="fixed top-0 left-0 w-full z-[9999]">
         <Navbar
           onToggleBriefGenerator={() =>
             setShowBriefGenerator(!showBriefGenerator)
@@ -116,7 +128,10 @@ const App = () => {
       </div>
 
       {/* Foreground Content */}
-      <div className="relative z-[9998] min-h-screen w-full overflow-x-hidden pt-[80px] pb-[60px]">
+      <div
+        className="relative z-[9998] w-full overflow-x-hidden"
+        style={{ paddingTop: navbarHeight, paddingBottom: footerHeight }}
+      >
         {/* Group 1 */}
         <div className="flex flex-wrap justify-center gap-4 pt-10 pb-4">
           {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
@@ -168,7 +183,7 @@ const App = () => {
       </div>
 
       {/* Sticky Footer */}
-      <div className="fixed bottom-0 left-0 w-full z-[9999]">
+      <div ref={footerRef} className="fixed bottom-0 left-0 w-full z-[9999]">
         <Footer
           artist={currentBackground.artist}
           link={currentBackground.link}

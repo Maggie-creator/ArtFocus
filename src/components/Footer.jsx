@@ -13,7 +13,7 @@ const Footer = ({ artist, link }) => {
 
         <div className="divider divider-horizontal"></div>
 
-        {/* About Modal Button */}
+        {/* About Button */}
         <button
           className="btn btn-secondary btn-sm"
           onClick={() => document.getElementById("my_modal_5").showModal()}
@@ -38,7 +38,7 @@ const Footer = ({ artist, link }) => {
           </div>
         </dialog>
 
-        {/* Support Me Modal Button */}
+        {/* Support Me Button */}
         <button
           className="btn btn-info btn-sm text-xs"
           onClick={() => document.getElementById("my_modal_6").showModal()}
@@ -69,27 +69,72 @@ const Footer = ({ artist, link }) => {
             </div>
           </div>
         </dialog>
+
+        {/* Contact Me Button */}
+        <button
+          className="btn btn-accent btn-sm text-xs"
+          onClick={() => document.getElementById("contact_modal").showModal()}
+        >
+          Contact me!
+        </button>
+
+        {/* Contact Modal */}
+        <dialog
+          id="contact_modal"
+          className="modal modal-bottom sm:modal-middle"
+        >
+          <div className="modal-box">
+            <h3 className="font-bold text-lg text-center">Contact Me</h3>
+            <form
+              action="https://formsubmit.co/artfocus.app@gmail.com"
+              method="POST"
+              className="flex flex-col gap-3 mt-4"
+            >
+              <input
+                type="text"
+                name="name"
+                placeholder="Your Name"
+                required
+                className="input input-bordered w-full"
+              />
+              <input
+                type="email"
+                name="email"
+                placeholder="Your Email"
+                required
+                className="input input-bordered w-full"
+              />
+              <textarea
+                name="message"
+                placeholder="Your Message"
+                required
+                className="textarea textarea-bordered w-full"
+              ></textarea>
+
+              {/* Optional: Redirect after submit */}
+              <input
+                type="hidden"
+                name="_next"
+                value="https://artfocus.vercel.app/thank-you"
+              />
+              {/* Optional: Disable CAPTCHA */}
+              <input type="hidden" name="_captcha" value="false" />
+
+              <button type="submit" className="btn btn-accent">
+                Send
+              </button>
+            </form>
+
+            <div className="modal-action">
+              <form method="dialog">
+                <button className="btn btn-outline btn-accent">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
       </aside>
 
-      {/* Right Section */}
       <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
-        <div
-          className="tooltip tooltip-primary tooltip-top"
-          data-tip="Github Repository"
-        >
-          <a
-            href="https://github.com/Maggie-creator/Artfocus"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="/icons/github-mark-white.svg"
-              alt="GitHub"
-              className="w-6 h-6 hover:scale-110 transition-transform"
-            />
-          </a>
-        </div>
-
         <span className="badge badge-soft badge-lg text-sm">
           Background image by:
           <a

@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://artfocus.vercel.app/sitemap.xml
-Host: artfocus.vercel.app
+Sitemap: https://artfocus.app/sitemap.xml
+Host: artfocus.app

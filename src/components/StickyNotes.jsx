@@ -58,8 +58,20 @@ function StickyNotes({ onClose }) {
   const removeNote = (id) => {
     const idx = notes.findIndex((n) => n.id === id);
     const updated = notes.filter((n) => n.id !== id);
+
+    if (!updated.length) {
+      const defaultNote = {
+        id: uuidv4(),
+        name: "Note 1",
+        text: "",
+        color: ColorOptions.Yellow,
+      };
+      saveToStorage([defaultNote]);
+      setActiveTab(0);
+      return;
+    }
+
     saveToStorage(updated);
-    if (!updated.length) return handleClose();
     if (activeTab >= updated.length) setActiveTab(updated.length - 1);
     else if (idx === activeTab) setActiveTab(Math.max(0, activeTab - 1));
   };
@@ -76,7 +88,7 @@ function StickyNotes({ onClose }) {
   };
 
   const handleClose = () => {
-    closeSoundRef.current?.play();
+    closeSoundRef.current?.play().catch(error => console.error("Error playing close sound in StickyNotes:", error));
     setIsClosing(true);
     setTimeout(() => {
       setVisible(false);

@@ -7,6 +7,7 @@ import {
   Flag,
   SquareX,
 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 const statusOptions = [
   "Not started",
@@ -28,7 +29,7 @@ const KanbanBoard = ({ onClose }) => {
   const [selectedColumn, setSelectedColumn] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [editingIndex, setEditingIndex] = useState(null);
+  const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingColumn, setEditingColumn] = useState(null);
   const [newTaskData, setNewTaskData] = useState({
     title: "",
@@ -44,7 +45,24 @@ const KanbanBoard = ({ onClose }) => {
   useEffect(() => {
     const storedTasks = localStorage.getItem("kanbanTasks");
     if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
+      let parsedTasks = JSON.parse(storedTasks);
+      if (parsedTasks && typeof parsedTasks === 'object') {
+        let idsAdded = false;
+        Object.keys(parsedTasks).forEach(columnKey => {
+          if (Array.isArray(parsedTasks[columnKey])) {
+            parsedTasks[columnKey].forEach(task => {
+              if (!task.hasOwnProperty('id') || task.id === undefined) {
+                task.id = uuidv4();
+                idsAdded = true;
+              }
+            });
+          }
+        });
+        if (idsAdded) {
+          localStorage.setItem("kanbanTasks", JSON.stringify(parsedTasks));
+        }
+      }
+      setTasks(parsedTasks);
     }
   }, []);
 
@@ -59,9 +77,13 @@ const KanbanBoard = ({ onClose }) => {
     setTasks((prev) => {
       const updatedColumn = [...prev[selectedColumn]];
       if (isEditing) {
-        updatedColumn[editingIndex] = newTaskData;
+        const taskIndexToUpdate = updatedColumn.findIndex(task => task.id === editingTaskId);
+        if (taskIndexToUpdate !== -1) {
+          updatedColumn[taskIndexToUpdate] = { ...updatedColumn[taskIndexToUpdate], ...newTaskData, id: editingTaskId }; // Ensure ID is preserved
+        }
       } else {
-        updatedColumn.push(newTaskData);
+        const newTask = { ...newTaskData, id: uuidv4() };
+        updatedColumn.push(newTask);
       }
       return {
         ...prev,
@@ -78,49 +100,47 @@ const KanbanBoard = ({ onClose }) => {
     });
     setShowModal(false);
     setIsEditing(false);
-    setEditingIndex(null);
+    setEditingTaskId(null);
     setEditingColumn(null);
   };
 
-  const deleteTask = (columnKey, index) => {
+  const deleteTask = (columnKey, taskId) => {
     setTasks((prev) => ({
       ...prev,
-      [columnKey]: prev[columnKey].filter((_, i) => i !== index),
+      [columnKey]: prev[columnKey].filter((task) => task.id !== taskId),
     }));
   };
 
-  const onDragStart = (e, task, from, index) => {
+  const onDragStart = (e, task, fromColumnKey) => {
     e.dataTransfer.setData("task", JSON.stringify(task));
-    e.dataTransfer.setData("from", from);
-    e.dataTransfer.setData("index", index);
+    e.dataTransfer.setData("from", fromColumnKey);
   };
 
   const onDrop = (e, to) => {
     const task = JSON.parse(e.dataTransfer.getData("task"));
-    const from = e.dataTransfer.getData("from");
-    const index = parseInt(e.dataTransfer.getData("index"), 10);
+    const fromColumnKey = e.dataTransfer.getData("from");
 
-    if (!task || from === to) return;
+    if (!task || fromColumnKey === to) return;
 
     setTasks((prev) => {
-      const updatedFromTasks = [...prev[from]];
-      updatedFromTasks.splice(index, 1);
+      const updatedFromTasks = prev[fromColumnKey].filter(t => t.id !== task.id);
+      const taskToAdd = { ...task };
 
       return {
         ...prev,
-        [from]: updatedFromTasks,
-        [to]: [...prev[to], task],
+        [fromColumnKey]: updatedFromTasks,
+        [to]: [...prev[to], taskToAdd],
       };
     });
   };
 
   const allowDrop = (e) => e.preventDefault();
 
-  const openEditModal = (task, columnKey, index) => {
+  const openEditModal = (taskToEdit, columnKey) => {
     setSelectedColumn(columnKey);
-    setNewTaskData(task);
+    setNewTaskData(taskToEdit);
     setIsEditing(true);
-    setEditingIndex(index);
+    setEditingTaskId(taskToEdit.id);
     setEditingColumn(columnKey);
     setShowModal(true);
   };
@@ -204,13 +224,13 @@ const KanbanBoard = ({ onClose }) => {
             </div>
 
             <div className="flex flex-col gap-2">
-              {tasks[key].map((task, i) => (
+              {tasks[key].map((task) => (
                 <div
-                  key={i}
+                  key={task.id}
                   className="relative bg-neutral text-white rounded p-2 shadow flex flex-col gap-2 cursor-pointer"
                   draggable
-                  onDragStart={(e) => onDragStart(e, task, key, i)}
-                  onClick={() => openEditModal(task, key, i)}
+                  onDragStart={(e) => onDragStart(e, task, key)}
+                  onClick={() => openEditModal(task, key)}
                 >
                   <div className="p-2 flex justify-between items-start">
                     <div className="flex gap-2">
@@ -233,7 +253,7 @@ const KanbanBoard = ({ onClose }) => {
                         className="text-red-500 hover:text-red-400 rounded-full w-6 h-6 flex items-center justify-center"
                         onClick={(e) => {
                           e.stopPropagation();
-                          deleteTask(key, i);
+                          deleteTask(key, task.id);
                         }}
                       >
                         <SquareX className="w-4 h-4" />

@@ -1,10 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 
 const Footer = ({ artist, link }) => {
-  const [showAboutModal, setShowAboutModal] = useState(false);
-  const [showSupportModal, setShowSupportModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-
   return (
     <footer className="footer sticky sm:footer-horizontal text-neutral-content items-center p-4 bottom-0 left-0 w-full z-[9999] backdrop-blur-sm bg-neutral/60">
       <aside className="grid-flow-col items-center">
@@ -20,18 +16,13 @@ const Footer = ({ artist, link }) => {
         {/* About Button */}
         <button
           className="btn btn-secondary btn-sm"
-          onClick={() => setShowAboutModal(true)}
-          aria-label="About ArtFocus"
+          onClick={() => document.getElementById("my_modal_5").showModal()}
         >
           About
         </button>
 
         {/* About Modal */}
-        <dialog
-          open={showAboutModal}
-          onClose={() => setShowAboutModal(false)}
-          className="modal modal-bottom sm:modal-middle"
-        >
+        <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
           <div className="modal-box">
             <h3 className="font-bold text-lg text-center">About</h3>
             <p className="py-4">
@@ -41,13 +32,7 @@ const Footer = ({ artist, link }) => {
             </p>
             <div className="modal-action">
               <form method="dialog">
-                <button
-                  className="btn btn-secondary btn-outline"
-                  onClick={() => setShowAboutModal(false)}
-                  aria-label="Close about modal"
-                >
-                  Close
-                </button>
+                <button className="btn btn-secondary btn-outline">Close</button>
               </form>
             </div>
           </div>
@@ -56,18 +41,13 @@ const Footer = ({ artist, link }) => {
         {/* Support Me Button */}
         <button
           className="btn btn-info btn-sm text-xs"
-          onClick={() => setShowSupportModal(true)}
-          aria-label="Support the developer"
+          onClick={() => document.getElementById("my_modal_6").showModal()}
         >
           Support me!
         </button>
 
         {/* Support Me Modal */}
-        <dialog
-          open={showSupportModal}
-          onClose={() => setShowSupportModal(false)}
-          className="modal modal-bottom sm:modal-middle"
-        >
+        <dialog id="my_modal_6" className="modal modal-bottom sm:modal-middle">
           <div className="modal-box text-center">
             <h3 className="font-bold text-lg mb-4">Support My Work</h3>
             <p className="mb-4">
@@ -84,13 +64,7 @@ const Footer = ({ artist, link }) => {
             </a>
             <div className="modal-action mt-6">
               <form method="dialog">
-                <button
-                  className="btn btn-outline btn-info"
-                  onClick={() => setShowSupportModal(false)}
-                  aria-label="Close support modal"
-                >
-                  Close
-                </button>
+                <button className="btn btn-outline btn-info">Close</button>
               </form>
             </div>
           </div>
@@ -99,16 +73,14 @@ const Footer = ({ artist, link }) => {
         {/* Contact Me Button */}
         <button
           className="btn btn-accent btn-sm text-xs"
-          onClick={() => setShowContactModal(true)}
-          aria-label="Contact the developer"
+          onClick={() => document.getElementById("contact_modal").showModal()}
         >
           Contact me!
         </button>
 
         {/* Contact Modal */}
         <dialog
-          open={showContactModal}
-          onClose={() => setShowContactModal(false)}
+          id="contact_modal"
           className="modal modal-bottom sm:modal-middle"
         >
           <div className="modal-box">
@@ -155,13 +127,7 @@ const Footer = ({ artist, link }) => {
 
             <div className="modal-action">
               <form method="dialog">
-                <button
-                  className="btn btn-outline btn-accent"
-                  onClick={() => setShowContactModal(false)}
-                  aria-label="Close contact modal"
-                >
-                  Close
-                </button>
+                <button className="btn btn-outline btn-accent">Close</button>
               </form>
             </div>
           </div>

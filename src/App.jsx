@@ -59,17 +59,26 @@ const App = () => {
   const navbarRef = useRef(null);
   const footerRef = useRef(null);
 
-  const [showPomodoro, setShowPomodoro] = useState(true);
-  const [showWorldClock, setShowWorldClock] = useState(true);
-  const [showTimeZoneConverter, setShowTimeZoneConverter] = useState(true);
-  const [showCanvas, setShowCanvas] = useState(true);
-  const [showTaskTracker, setShowTaskTracker] = useState(true);
-  const [showKanban, setShowKanban] = useState(true);
-  const [showQuote, setShowQuote] = useState(true);
-  const [showBriefGenerator, setShowBriefGenerator] = useState(true);
-  const [showReferenceImages, setShowReferenceImages] = useState(true);
-  const [showYoutube, setShowYoutube] = useState(true);
-  const [showStickyNotes, setShowStickyNotes] = useState(true);
+  const [componentVisibility, setComponentVisibility] = useState({
+    pomodoro: true,
+    worldClock: true,
+    timeZoneConverter: true,
+    canvas: true,
+    taskTracker: true,
+    kanban: true,
+    quote: true,
+    briefGenerator: true,
+    referenceImages: true,
+    youtube: true,
+    stickyNotes: true,
+  });
+
+  const handleToggleComponentVisibility = (componentName) => {
+    setComponentVisibility(prev => ({
+      ...prev,
+      [componentName]: !prev[componentName]
+    }));
+  };
 
   useEffect(() => {
     const savedKey = localStorage.getItem("selectedBackground");
@@ -105,23 +114,7 @@ const App = () => {
       {/* Sticky Navbar */}
       <div ref={navbarRef} className="fixed top-0 left-0 w-full z-[9999]">
         <Navbar
-          onToggleBriefGenerator={() =>
-            setShowBriefGenerator(!showBriefGenerator)
-          }
-          onTogglePomodoro={() => setShowPomodoro(!showPomodoro)}
-          onToggleWorldClock={() => setShowWorldClock(!showWorldClock)}
-          onToggleCanvas={() => setShowCanvas(!showCanvas)}
-          onToggleTaskTracker={() => setShowTaskTracker(!showTaskTracker)}
-          onToggleKanbanBoard={() => setShowKanban(!showKanban)}
-          onToggleQuote={() => setShowQuote(!showQuote)}
-          onToggleReferenceImages={() =>
-            setShowReferenceImages(!showReferenceImages)
-          }
-          onToggleYoutube={() => setShowYoutube(!showYoutube)}
-          onToggleStickyNotes={() => setShowStickyNotes(!showStickyNotes)}
-          onToggleTimeZoneConverter={() =>
-            setShowTimeZoneConverter(!showTimeZoneConverter)
-          }
+          onToggleComponent={handleToggleComponentVisibility}
           onBackgroundChange={handleBackgroundChange}
           backgrounds={backgrounds}
         />
@@ -134,50 +127,50 @@ const App = () => {
       >
         {/* Group 1 */}
         <div className="flex flex-wrap justify-center gap-4 pt-10 pb-4">
-          {showPomodoro && <Pomodoro onClose={() => setShowPomodoro(false)} />}
-          {showTaskTracker && (
-            <TaskTracker onClose={() => setShowTaskTracker(false)} />
+          {componentVisibility.pomodoro && <Pomodoro onClose={() => handleToggleComponentVisibility('pomodoro')} />}
+          {componentVisibility.taskTracker && (
+            <TaskTracker onClose={() => handleToggleComponentVisibility('taskTracker')} />
           )}
-          {showStickyNotes && (
-            <StickyNotes onClose={() => setShowStickyNotes(false)} />
+          {componentVisibility.stickyNotes && (
+            <StickyNotes onClose={() => handleToggleComponentVisibility('stickyNotes')} />
           )}
         </div>
 
         {/* Kanban */}
         <div className="flex justify-center p-4">
           <div className="lg:basis-[1188px] max-w-full w-full">
-            {showKanban && <KanbanBoard onClose={() => setShowKanban(false)} />}
+            {componentVisibility.kanban && <KanbanBoard onClose={() => handleToggleComponentVisibility('kanban')} />}
           </div>
         </div>
 
         {/* Group 2 */}
         <div className="flex flex-wrap justify-center gap-4 p-4">
-          {showWorldClock && (
-            <WorldClock onClose={() => setShowWorldClock(false)} />
+          {componentVisibility.worldClock && (
+            <WorldClock onClose={() => handleToggleComponentVisibility('worldClock')} />
           )}
-          {showTimeZoneConverter && (
+          {componentVisibility.timeZoneConverter && (
             <TimeZoneConverter
-              onClose={() => setShowTimeZoneConverter(false)}
+              onClose={() => handleToggleComponentVisibility('timeZoneConverter')}
             />
           )}
-          {showQuote && <Quote onClose={() => setShowQuote(false)} />}
+          {componentVisibility.quote && <Quote onClose={() => handleToggleComponentVisibility('quote')} />}
         </div>
 
         {/* Group 3 */}
         <div className="flex flex-wrap justify-center gap-4 p-4">
-          {showReferenceImages && (
-            <ReferenceImages onClose={() => setShowReferenceImages(false)} />
+          {componentVisibility.referenceImages && (
+            <ReferenceImages onClose={() => handleToggleComponentVisibility('referenceImages')} />
           )}
-          {showBriefGenerator && (
-            <BriefGenerator onClose={() => setShowBriefGenerator(false)} />
+          {componentVisibility.briefGenerator && (
+            <BriefGenerator onClose={() => handleToggleComponentVisibility('briefGenerator')} />
           )}
-          {showYoutube && <YouTube onClose={() => setShowYoutube(false)} />}
+          {componentVisibility.youtube && <YouTube onClose={() => handleToggleComponentVisibility('youtube')} />}
         </div>
 
         {/* Canvas */}
         <div className="flex justify-center p-4">
           <div className="lg:basis-[1188px] max-w-full w-full">
-            {showCanvas && <Canvas onClose={() => setShowCanvas(false)} />}
+            {componentVisibility.canvas && <Canvas onClose={() => handleToggleComponentVisibility('canvas')} />}
           </div>
         </div>
       </div>

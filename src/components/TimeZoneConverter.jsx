@@ -20,7 +20,7 @@ const TimeZoneConverter = ({ onClose }) => {
   const handleConvert = () => {
     if (clickSoundRef.current) {
       clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(() => {});
+      clickSoundRef.current.play().catch(error => console.error("Error playing TimeZoneConverter click sound:", error));
     }
 
     if (!inputDate || !inputTime || !convertFromZone || !convertToZone) {
@@ -58,7 +58,7 @@ const TimeZoneConverter = ({ onClose }) => {
   const handleClose = () => {
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play();
+      closeSoundRef.current.play().catch(error => console.error("Error playing TimeZoneConverter close sound:", error));
     }
     setIsClosing(true);
     setTimeout(() => {

@@ -1,6 +1,7 @@
 // components/TaskTracker.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Trash2, SquareX } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 function TaskTracker({ onClose }) {
   const [taskInput, setTaskInput] = useState("");
@@ -18,9 +19,27 @@ function TaskTracker({ onClose }) {
 
   useEffect(() => {
     const storedTasks = localStorage.getItem("taskTrackerData");
+    let tasksToLoad = { work: [], personal: [], education: [] };
     if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
+      tasksToLoad = JSON.parse(storedTasks);
     }
+
+    let idsWereAdded = false;
+    Object.keys(tasksToLoad).forEach(category => {
+      if (Array.isArray(tasksToLoad[category])) {
+        tasksToLoad[category].forEach(task => {
+          if (!task.hasOwnProperty('id') || task.id === undefined) {
+            task.id = uuidv4();
+            idsWereAdded = true;
+          }
+        });
+      }
+    });
+
+    if (idsWereAdded) {
+      localStorage.setItem("taskTrackerData", JSON.stringify(tasksToLoad));
+    }
+    setTasks(tasksToLoad);
   }, []);
 
   useEffect(() => {
@@ -36,13 +55,13 @@ function TaskTracker({ onClose }) {
     if (taskInput.trim()) {
       if (clickSoundRef.current) {
         clickSoundRef.current.currentTime = 0;
-        clickSoundRef.current.play();
+        clickSoundRef.current.play().catch(error => console.error("Error playing TaskTracker click sound:", error));
       }
       setTasks((prev) => ({
         ...prev,
         [selectedTab]: [
           ...prev[selectedTab],
-          { id: Date.now(), text: taskInput, completed: false },
+          { id: uuidv4(), text: taskInput, completed: false },
         ],
       }));
       setTaskInput("");
@@ -75,7 +94,7 @@ function TaskTracker({ onClose }) {
   const handleClose = () => {
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play();
+      closeSoundRef.current.play().catch(error => console.error("Error playing TaskTracker close sound:", error));
     }
     setIsClosing(true);
     setTimeout(() => {

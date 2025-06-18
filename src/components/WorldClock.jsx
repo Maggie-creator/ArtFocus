@@ -36,7 +36,7 @@ const WorldClock = ({ onClose }) => {
   const playClickSound = () => {
     if (clickSoundRef.current) {
       clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(() => {});
+      clickSoundRef.current.play().catch(error => console.error("Error playing WorldClock click sound:", error));
     }
   };
 
@@ -136,7 +136,7 @@ const WorldClock = ({ onClose }) => {
   const handleClose = () => {
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play();
+      closeSoundRef.current.play().catch(error => console.error("Error playing WorldClock close sound:", error));
     }
     setIsClosing(true);
     setTimeout(() => {

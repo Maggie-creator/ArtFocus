@@ -29,7 +29,7 @@ function Pomodoro({ onClose }) {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timerRef.current);
-            new Audio("/bell.mp3").play();
+            new Audio("/sounds/bell.mp3").play().catch(error => console.error("Error playing bell sound:", error));
             const nextSession = isWorkTime ? breakDuration : workDuration;
             setIsWorkTime(!isWorkTime);
             setSecondsLeft(nextSession * 60);
@@ -46,7 +46,7 @@ function Pomodoro({ onClose }) {
   useEffect(() => {
     if (isRunning && tickingSoundRef.current) {
       tickingSoundRef.current.loop = true;
-      tickingSoundRef.current.play().catch(() => {});
+      tickingSoundRef.current.play().catch(error => console.error("Error playing ticking sound:", error));
     } else if (tickingSoundRef.current) {
       tickingSoundRef.current.pause();
       tickingSoundRef.current.currentTime = 0;
@@ -56,7 +56,7 @@ function Pomodoro({ onClose }) {
   useEffect(() => {
     if (prevIsWorkTimeRef.current !== isWorkTime && !isWorkTime) {
       if (serviceBellRef.current) {
-        serviceBellRef.current.play().catch(() => {});
+        serviceBellRef.current.play().catch(error => console.error("Error playing service bell sound:", error));
       }
     }
     prevIsWorkTimeRef.current = isWorkTime;
@@ -73,7 +73,7 @@ function Pomodoro({ onClose }) {
   const handleClose = () => {
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play();
+      closeSoundRef.current.play().catch(error => console.error("Error playing Pomodoro close sound:", error));
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -85,7 +85,7 @@ function Pomodoro({ onClose }) {
   const handlePlayPause = () => {
     if (mouseClickRef.current) {
       mouseClickRef.current.currentTime = 0;
-      mouseClickRef.current.play().catch(() => {});
+      mouseClickRef.current.play().catch(error => console.error("Error playing mouse click sound:", error));
     }
     setIsRunning(!isRunning);
   };
@@ -93,7 +93,7 @@ function Pomodoro({ onClose }) {
   const handleReset = () => {
     if (mouseClickRef.current) {
       mouseClickRef.current.currentTime = 0;
-      mouseClickRef.current.play().catch(() => {});
+      mouseClickRef.current.play().catch(error => console.error("Error playing mouse click sound:", error));
     }
     setIsRunning(false);
     setSecondsLeft(workDuration * 60);

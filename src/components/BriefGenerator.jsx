@@ -69,13 +69,26 @@ function BriefGenerator({ onClose }) {
       "https://api.sheety.co/0337e63773886d0c15210cef555f9929/artfocus/briefGenerator"
     )
       .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
+        if (!res.ok) {
+          // Asynchronously read the response text for more detailed error logging
+          return res.text().then(text => {
+            throw new Error(`Network response was not ok. Status: ${res.status}, Body: ${text}`);
+          });
+        }
         return res.json();
       })
       .then((json) => {
         const data = json.briefGenerator || json.sheet1 || [];
-        if (!Array.isArray(data) || data.length === 0) {
-          throw new Error("No usable data found in response");
+        if (!Array.isArray(data)) { // Ensure data is an array before checking length
+          console.error("Fetched data is not an array:", data);
+          throw new Error("Brief data is not in the expected array format.");
+        }
+        if (data.length === 0) {
+           // It's possible the sheet is empty but the API call was successful.
+           // This might not be an "error" state but an "empty data" state.
+           // For now, we'll treat it as potentially unexpected if lists remain empty.
+          console.warn("Fetched brief data array is empty. UI lists might be empty.");
+          // No throw, allow processing of empty data, which results in "Unknown" for brief parts.
         }
 
         const unique = (arr) => [
@@ -88,10 +101,12 @@ function BriefGenerator({ onClose }) {
         setEnvironments(unique(data.map((item) => item.environments)));
         setColorSchemes(unique(data.map((item) => item.colorSchemes)));
         setTypes(unique(data.map((item) => item.types)));
+        // Clear any previous error if fetch is successful
+        setError(null);
       })
       .catch((err) => {
-        console.error("Failed to fetch brief data:", err);
-        setError("Failed to fetch brief data. Check console for details.");
+        console.error("Failed to fetch or process brief data:", err);
+        setError(`Failed to load brief data: ${err.message}. Please try again later.`);
       });
   }, []);
 

@@ -224,13 +224,24 @@ const ReferenceImages = ({ onClose }) => {
                   corner: "bottom-right",
                   style: "bottom-0 right-0 cursor-nwse-resize",
                 },
-              ].map(({ corner, style }, i) => (
-                <div
-                  key={i}
-                  className={`absolute ${style} w-3 h-3 bg-transparent z-20`}
-                  onMouseDown={(e) => handleMouseDown(e, corner, index)}
-                />
-              ))}
+              ].map(({ corner, style }, i) => {
+                let ariaLabel = "";
+                if (corner === "top-left") ariaLabel = "Resize from top-left";
+                else if (corner === "top-right") ariaLabel = "Resize from top-right";
+                else if (corner === "bottom-left") ariaLabel = "Resize from bottom-left";
+                else if (corner === "bottom-right") ariaLabel = "Resize from bottom-right";
+
+                return (
+                  <div
+                    key={i}
+                    className={`absolute ${style} w-3 h-3 bg-transparent z-20`}
+                    onMouseDown={(e) => handleMouseDown(e, corner, index)}
+                    aria-label={ariaLabel}
+                    role="button"
+                    tabIndex={0}
+                  />
+                );
+              })}
             </div>
           ))}
         </div>

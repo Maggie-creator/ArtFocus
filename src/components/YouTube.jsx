@@ -4,22 +4,26 @@ import { SquareX } from "lucide-react";
 
 const YouTubePlayer = ({ onClose }) => {
   const [videoUrl, setVideoUrl] = useState("");
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isValidYouTubeUrl, setIsValidYouTubeUrl] = useState(true);
   const closeClickAudioRef = useRef(null);
 
   const handleUrlChange = (event) => {
-    setVideoUrl(event.target.value);
-  };
-
-  const togglePlay = () => {
-    setIsPlaying(!isPlaying);
+    const newUrl = event.target.value;
+    setVideoUrl(newUrl);
+    if (newUrl.trim() === "") {
+      setIsValidYouTubeUrl(true); // Reset validation if input is empty
+    } else {
+      // Basic check for youtube.com or youtu.be links
+      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+      setIsValidYouTubeUrl(youtubeRegex.test(newUrl));
+    }
   };
 
   const handleClose = () => {
     if (closeClickAudioRef.current) {
       closeClickAudioRef.current.currentTime = 0;
-      closeClickAudioRef.current.play();
+      closeClickAudioRef.current.play().catch(error => console.error("Error playing YouTube close sound:", error));
     }
     setIsClosing(true);
     setTimeout(onClose, 150); // matches transition duration
@@ -59,12 +63,18 @@ const YouTubePlayer = ({ onClose }) => {
         className="input input-bordered border-primary w-full"
       />
 
+      {/* Validation Message */}
+      {videoUrl && !isValidYouTubeUrl && (
+        <p className="text-red-500 text-sm mt-2">
+          Please enter a valid YouTube URL.
+        </p>
+      )}
+
       {/* React Player */}
-      {videoUrl && (
+      {videoUrl && isValidYouTubeUrl && (
         <div className="relative aspect-w-16 aspect-h-9 overflow-hidden rounded-lg">
           <ReactPlayer
             url={videoUrl}
-            playing={isPlaying}
             controls={true}
             width="100%"
             height="100%"

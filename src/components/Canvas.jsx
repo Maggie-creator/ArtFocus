@@ -2,14 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { SquareX } from "lucide-react";
 
 const Canvas = ({ onClose }) => {
-  const SUMO_PAINT_URL =
-    "https://paint.sumo.app/?parameter=value&another_parameter=another_value";
+  const SUMO_PAINT_URL = "https://paint.sumo.app/";
   const SUMO_3D_URL = "https://3d.sumo.app/?lang=en";
 
-  const clickSound = new Audio("/sounds/mouse-click-sound.mp3");
-
-  const audioContextRef = useRef(null);
-  const closeSoundBufferRef = useRef(null);
+  const clickSoundRef = useRef(null);
+  const closeSoundRef = useRef(null);
 
   const [isClosing, setIsClosing] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -21,31 +18,15 @@ const Canvas = ({ onClose }) => {
   };
 
   useEffect(() => {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    audioContextRef.current = ctx;
-
-    fetch("/sounds/notebook-close-83836.mp3")
-      .then((res) => res.arrayBuffer())
-      .then((buf) => ctx.decodeAudioData(buf))
-      .then((decoded) => {
-        closeSoundBufferRef.current = decoded;
-      })
-      .catch(console.error);
-
-    return () => ctx.close();
+    clickSoundRef.current = new Audio("/sounds/mouse-click-sound.mp3");
+    closeSoundRef.current = new Audio("/sounds/notebook-close-83836.mp3");
   }, []);
 
-  const playCloseSound = () => {
-    if (audioContextRef.current && closeSoundBufferRef.current) {
-      const src = audioContextRef.current.createBufferSource();
-      src.buffer = closeSoundBufferRef.current;
-      src.connect(audioContextRef.current.destination);
-      src.start();
-    }
-  };
-
   const handleClose = () => {
-    playCloseSound();
+    if (closeSoundRef.current) {
+      closeSoundRef.current.currentTime = 0;
+      closeSoundRef.current.play().catch(error => console.error("Error playing Canvas close sound:", error));
+    }
     setIsClosing(true);
     setTimeout(() => {
       setVisible(false);
@@ -54,12 +35,18 @@ const Canvas = ({ onClose }) => {
   };
 
   const handleOpenFullscreen = () => {
-    clickSound.play();
+    if (clickSoundRef.current) {
+      clickSoundRef.current.currentTime = 0;
+      clickSoundRef.current.play().catch(error => console.error("Error playing Canvas click sound:", error));
+    }
     window.open(softwareMap[selectedTool], "_blank");
   };
 
   const handleToolChange = (e) => {
-    clickSound.play();
+    if (clickSoundRef.current) {
+      clickSoundRef.current.currentTime = 0;
+      clickSoundRef.current.play().catch(error => console.error("Error playing Canvas click sound:", error));
+    }
     setSelectedTool(e.target.value);
   };
 
@@ -92,16 +79,14 @@ const Canvas = ({ onClose }) => {
       </h1>
 
       {/* Tool selection dropdown */}
-      <button className="btn btn-secondary">
-        <select
-          className="bg-transparent w-full"
-          value={selectedTool}
-          onChange={handleToolChange}
-        >
-          <option className="bg-base-100">Sumo Paint</option>
-          <option className="bg-base-100">Sumo 3D</option>
-        </select>
-      </button>
+      <select
+        className="select select-secondary w-full max-w-xs mb-4" // Added mb-4 for spacing
+        value={selectedTool}
+        onChange={handleToolChange}
+      >
+        <option>Sumo Paint</option>
+        <option>Sumo 3D</option>
+      </select>
 
       {/* Iframe preview */}
       <div

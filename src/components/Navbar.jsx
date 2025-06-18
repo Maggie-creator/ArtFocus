@@ -14,31 +14,21 @@ import {
 } from "lucide-react";
 
 const Navbar = ({
-  onToggleBriefGenerator,
-  onTogglePomodoro,
-  onToggleWorldClock,
-  onToggleTimeZoneConverter,
-  onToggleCanvas,
-  onToggleTaskTracker,
-  onToggleKanbanBoard,
-  onToggleQuote,
-  onToggleReferenceImages,
-  onToggleYoutube,
-  onToggleStickyNotes,
+  onToggleComponent,
   onBackgroundChange,
 }) => {
   const tools = [
-    ["Pomodoro Timer", TimerReset, onTogglePomodoro],
-    ["To-Do List", ListChecks, onToggleTaskTracker],
-    ["Sticky Notes", NotebookPen, onToggleStickyNotes],
-    ["Kanban Board", Kanban, onToggleKanbanBoard],
-    ["World Clock", Earth, onToggleWorldClock],
-    ["Time Zone Converter", Clock10, onToggleTimeZoneConverter],
-    ["Quote", Quote, onToggleQuote],
-    ["Reference Images", FileImage, onToggleReferenceImages],
-    ["Brief Generator", Lightbulb, onToggleBriefGenerator],
-    ["Youtube", MonitorPlay, onToggleYoutube],
-    ["Sumo Paint / Sumo 3D", Palette, onToggleCanvas],
+    ["Pomodoro Timer", TimerReset, () => onToggleComponent('pomodoro'), 'pomodoro'],
+    ["To-Do List", ListChecks, () => onToggleComponent('taskTracker'), 'taskTracker'],
+    ["Sticky Notes", NotebookPen, () => onToggleComponent('stickyNotes'), 'stickyNotes'],
+    ["Kanban Board", Kanban, () => onToggleComponent('kanban'), 'kanban'],
+    ["World Clock", Earth, () => onToggleComponent('worldClock'), 'worldClock'],
+    ["Time Zone Converter", Clock10, () => onToggleComponent('timeZoneConverter'), 'timeZoneConverter'],
+    ["Quote", Quote, () => onToggleComponent('quote'), 'quote'],
+    ["Reference Images", FileImage, () => onToggleComponent('referenceImages'), 'referenceImages'],
+    ["Brief Generator", Lightbulb, () => onToggleComponent('briefGenerator'), 'briefGenerator'],
+    ["Youtube", MonitorPlay, () => onToggleComponent('youtube'), 'youtube'],
+    ["Sumo Paint / Sumo 3D", Palette, () => onToggleComponent('canvas'), 'canvas'],
   ];
 
   return (
@@ -55,15 +45,16 @@ const Navbar = ({
       {/* Navbar Center (Only on Large Screens) */}
       <div className="navbar justify-center lg:flex">
         <div className="flex flex-wrap gap-3 w-full">
-          {tools.map(([tip, Icon, handler]) => (
+          {tools.map(([tip, Icon, handler, keyName]) => (
             <div
-              key={tip}
+              key={keyName} // Use keyName for React key
               className="sm:tooltip sm:tooltip-bottom sm:tooltip-secondary z-[9999]"
               data-tip={tip}
             >
               <button
                 onClick={handler}
                 className="btn btn-accent shadow-lg shadow-accent/50"
+                aria-label={tip} // Add aria-label
               >
                 <Icon className="w-5 h-5" />
               </button>
@@ -78,6 +69,7 @@ const Navbar = ({
               tabIndex={0}
               className="btn btn-accent btn-outline tooltip tooltip-bottom tooltip-secondary flex justify-center items-center"
               data-tip="Change Background"
+              aria-label="Change Background" // Add aria-label
             >
               <span className="text-lg">🎨</span>
             </label>

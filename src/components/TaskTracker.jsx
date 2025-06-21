@@ -28,7 +28,11 @@ function TaskTracker({ onClose, isSoundOn }) {
     Object.keys(tasksToLoad).forEach((category) => {
       if (Array.isArray(tasksToLoad[category])) {
         tasksToLoad[category].forEach((task) => {
-          if (!Object.prototype.hasOwnProperty.call(task, "id") || task.id === undefined) { // Fixed hasOwnProperty
+          if (
+            !Object.prototype.hasOwnProperty.call(task, "id") ||
+            task.id === undefined
+          ) {
+            // Fixed hasOwnProperty
             task.id = uuidv4();
             idsWereAdded = true;
           }
@@ -236,10 +240,6 @@ function TaskTracker({ onClose, isSoundOn }) {
         preload="auto"
       />
 
-      <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
-        To-Do List
-      </h1>
-
       {/* Tabs */}
       <h1 className="text-2xl font-semibold mb-4 text-center permanent-marker p-4">
         To-Do List
@@ -254,30 +254,34 @@ function TaskTracker({ onClose, isSoundOn }) {
         onKeyDown={handleTabKeyDown}
         tabIndex={0} // Make tablist focusable
       >
-        {["work", "personal", "education"].map((tab) => ( // Removed unused 'index'
-          <button
-            key={tab}
-            role="tab"
-            id={`tab-${tab}`}
-            aria-controls={`tabpanel-${tab}`}
-            aria-selected={selectedTab === tab}
-            onClick={() => handleTabChange(tab)}
-            className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
-              selectedTab === tab
-                ? `badge-${
-                    tab === "work"
-                      ? "primary"
-                      : tab === "personal"
-                      ? "secondary"
-                      : "accent"
-                  }`
-                : "bg-ghost"
-            }`}
-            tabIndex={selectedTab === tab ? 0 : -1} // Manage focus
-          >
-            {tab.charAt(0).toUpperCase() + tab.slice(1)}
-          </button>
-        ))}
+        {["work", "personal", "education"].map(
+          (
+            tab // Removed unused 'index'
+          ) => (
+            <button
+              key={tab}
+              role="tab"
+              id={`tab-${tab}`}
+              aria-controls={`tabpanel-${tab}`}
+              aria-selected={selectedTab === tab}
+              onClick={() => handleTabChange(tab)}
+              className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
+                selectedTab === tab
+                  ? `badge-${
+                      tab === "work"
+                        ? "primary"
+                        : tab === "personal"
+                        ? "secondary"
+                        : "accent"
+                    }`
+                  : "bg-ghost"
+              }`}
+              tabIndex={selectedTab === tab ? 0 : -1} // Manage focus
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          )
+        )}
       </div>
 
       <div

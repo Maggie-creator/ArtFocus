@@ -125,32 +125,44 @@ const Footer = ({ artist, link }) => {
                   onSubmit={handleSubmit}
                   className="flex flex-col gap-3 mt-4"
                 >
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="Your Name"
-                    required
-                    className="input input-bordered w-full"
-                    value={formData.name}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Your Email"
-                    required
-                    className="input input-bordered w-full"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                  <textarea
-                    name="message"
-                    placeholder="Your Message"
-                    required
-                    className="textarea textarea-bordered w-full"
-                    value={formData.message}
-                    onChange={handleChange}
-                  ></textarea>
+                  <div>
+                    <label htmlFor="name" className="sr-only">Your Name</label>
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      placeholder="Your Name"
+                      required
+                      className="input input-bordered w-full"
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="sr-only">Your Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      placeholder="Your Email"
+                      required
+                      className="input input-bordered w-full"
+                      value={formData.email}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="message" className="sr-only">Your Message</label>
+                    <textarea
+                      name="message"
+                      id="message"
+                      placeholder="Your Message"
+                      required
+                      className="textarea textarea-bordered w-full"
+                      value={formData.message}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
 
                   <button type="submit" className="btn btn-accent">
                     Send
@@ -179,7 +191,7 @@ const Footer = ({ artist, link }) => {
         </dialog>
       </aside>
 
-      <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
+      <div className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
         <span className="badge badge-soft badge-lg text-sm">
           Background image by:
           <a
@@ -191,7 +203,7 @@ const Footer = ({ artist, link }) => {
             {artist}
           </a>
         </span>
-      </nav>
+      </div>
     </footer>
   );
 };

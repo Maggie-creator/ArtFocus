@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react"; // Removed unused useEffect
 import { Calendar, Clock, SquareX } from "lucide-react";
 import { DateTime } from "luxon";
 
 const allTimeZones = Intl.supportedValuesOf("timeZone");
 
-const TimeZoneConverter = ({ onClose }) => {
+const TimeZoneConverter = ({ onClose, isSoundOn }) => { // Added isSoundOn to props
   const [convertFromZone, setConvertFromZone] = useState("");
   const [convertToZone, setConvertToZone] = useState("");
   const [inputDate, setInputDate] = useState("");
@@ -18,7 +18,7 @@ const TimeZoneConverter = ({ onClose }) => {
   const [visible, setVisible] = useState(true);
 
   const handleConvert = () => {
-    if (clickSoundRef.current) {
+    if (isSoundOn && clickSoundRef.current) { // Added isSoundOn check
       clickSoundRef.current.currentTime = 0;
       clickSoundRef.current.play().catch(error => console.error("Error playing TimeZoneConverter click sound:", error));
     }
@@ -56,7 +56,7 @@ const TimeZoneConverter = ({ onClose }) => {
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
+    if (isSoundOn && closeSoundRef.current) { // Added isSoundOn check
       closeSoundRef.current.currentTime = 0;
       closeSoundRef.current.play().catch(error => console.error("Error playing TimeZoneConverter close sound:", error));
     }
@@ -85,6 +85,7 @@ const TimeZoneConverter = ({ onClose }) => {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Time Zone Converter"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -109,8 +110,10 @@ const TimeZoneConverter = ({ onClose }) => {
 
       <div className="flex gap-2 mb-4 relative">
         <div className="relative w-1/2">
+          <label htmlFor="input-date" className="sr-only">Date</label>
           <input
             type="date"
+            id="input-date"
             className="input input-bordered border-primary w-full"
             value={inputDate}
             onChange={(e) => setInputDate(e.target.value)}
@@ -118,8 +121,10 @@ const TimeZoneConverter = ({ onClose }) => {
         </div>
 
         <div className="relative w-1/2">
+          <label htmlFor="input-time" className="sr-only">Time</label>
           <input
             type="time"
+            id="input-time"
             className="input input-bordered border-primary w-full"
             value={inputTime}
             onChange={(e) => setInputTime(e.target.value)}
@@ -133,31 +138,39 @@ const TimeZoneConverter = ({ onClose }) => {
       </div>
 
       <div className="flex gap-2 mb-4">
-        <select
-          className="select border-primary w-1/2 rounded"
-          value={convertFromZone}
-          onChange={(e) => setConvertFromZone(e.target.value)}
-        >
-          <option value="">From Time Zone</option>
-          {allTimeZones.map((tz) => (
-            <option key={tz} value={tz}>
-              {tz}
-            </option>
-          ))}
-        </select>
+        <div className="w-1/2">
+          <label htmlFor="from-zone" className="sr-only">From Time Zone</label>
+          <select
+            id="from-zone"
+            className="select border-primary w-full rounded" // Changed w-1/2 to w-full as parent is w-1/2
+            value={convertFromZone}
+            onChange={(e) => setConvertFromZone(e.target.value)}
+          >
+            <option value="">From Time Zone</option>
+            {allTimeZones.map((tz) => (
+              <option key={tz} value={tz}>
+                {tz}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <select
-          className="select border-primary w-1/2 rounded"
-          value={convertToZone}
-          onChange={(e) => setConvertToZone(e.target.value)}
-        >
-          <option value="">To Time Zone</option>
-          {allTimeZones.map((tz) => (
-            <option key={tz} value={tz}>
-              {tz}
-            </option>
-          ))}
-        </select>
+        <div className="w-1/2">
+          <label htmlFor="to-zone" className="sr-only">To Time Zone</label>
+          <select
+            id="to-zone"
+            className="select border-primary w-full rounded" // Changed w-1/2 to w-full
+            value={convertToZone}
+            onChange={(e) => setConvertToZone(e.target.value)}
+          >
+            <option value="">To Time Zone</option>
+            {allTimeZones.map((tz) => (
+              <option key={tz} value={tz}>
+                {tz}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <button
@@ -168,7 +181,7 @@ const TimeZoneConverter = ({ onClose }) => {
       </button>
 
       {convertedOutput && (
-        <div className="mt-3 flex flex-wrap gap-4 justify-center">
+        <div role="status" className="mt-3 flex flex-wrap gap-4 justify-center">
           {convertedOutput.split("\n").map((line, index) => (
             <div
               key={index}

@@ -31,15 +31,9 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
   };
 
   const handleClose = () => {
-    if (isSoundOn) {
-      new Audio("/sounds/click.mp3")
-        .play()
-        .catch((err) =>
-          console.error("Error playing click sound on close:", err)
-        );
-    }
-
-    if (closeClickAudioRef.current) {
+    // Removed the generic click.mp3 sound from here to avoid double sound.
+    // The closeClickAudioRef (notebook-close-83836.mp3) is more specific.
+    if (isSoundOn && closeClickAudioRef.current) {
       closeClickAudioRef.current.currentTime = 0;
       closeClickAudioRef.current
         .play()
@@ -67,6 +61,7 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close YouTube player"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -78,8 +73,10 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
       </h1>
 
       {/* Video URL input */}
+      <label htmlFor="youtube-url-input" className="sr-only">YouTube Video URL</label>
       <input
         type="text"
+        id="youtube-url-input"
         value={videoUrl}
         onChange={handleUrlChange}
         placeholder="Enter YouTube video URL"
@@ -97,7 +94,7 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
 
       {/* Validation Message */}
       {videoUrl && !isValidYouTubeUrl && (
-        <p className="text-red-500 text-sm mt-2">
+        <p role="alert" className="text-red-500 text-sm mt-2">
           Please enter a valid YouTube URL.
         </p>
       )}

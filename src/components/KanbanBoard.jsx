@@ -28,7 +28,7 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState(null);
-  const [editingColumn, setEditingColumn] = useState(null);
+  // const [editingColumn, setEditingColumn] = useState(null); // Removed as unused
   const [newTaskData, setNewTaskData] = useState({
     title: "",
     description: "",
@@ -39,6 +39,7 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
 
   const clickSoundRef = useRef(null);
   const closeSoundRef = useRef(null);
+  const dialogRef = useRef(null); // For modal dialog
 
   useEffect(() => {
     const storedTasks = localStorage.getItem("kanbanTasks");
@@ -49,7 +50,7 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
         Object.keys(parsedTasks).forEach((columnKey) => {
           if (Array.isArray(parsedTasks[columnKey])) {
             parsedTasks[columnKey].forEach((task) => {
-              if (!task.hasOwnProperty("id") || task.id === undefined) {
+              if (!Object.prototype.hasOwnProperty.call(task, "id") || task.id === undefined) {
                 task.id = uuidv4();
                 idsAdded = true;
               }
@@ -102,10 +103,11 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
       priority: "",
       status: "",
     });
-    setShowModal(false);
+    dialogRef.current?.close(); // Close dialog using ref
+    setShowModal(false); // Still manage state for conditional rendering if needed, or remove if dialogRef.current.showModal() is sole controller
     setIsEditing(false);
     setEditingTaskId(null);
-    setEditingColumn(null);
+    // setEditingColumn(null); // Removed as unused
   };
 
   const deleteTask = (columnKey, taskId) => {
@@ -150,13 +152,14 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
     setNewTaskData(taskToEdit);
     setIsEditing(true);
     setEditingTaskId(taskToEdit.id);
-    setEditingColumn(columnKey);
-    setShowModal(true);
+    // setEditingColumn(columnKey); // Removed as unused
+    setShowModal(true); // Keep for conditional rendering
+    dialogRef.current?.showModal(); // Open dialog using ref
     if (isSoundOn) new Audio("/sounds/click.mp3").play();
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) closeSoundRef.current.play();
+    if (isSoundOn && closeSoundRef.current) closeSoundRef.current.play(); // Added isSoundOn check
     setTimeout(() => {
       onClose();
     }, 150);
@@ -190,7 +193,7 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
   ];
 
   return (
-    <div className="relative flex flex-col items-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-190">
+    <div className="relative flex flex-col items-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-full"> {/* Changed w-190 to w-full */}
       <audio
         ref={clickSoundRef}
         src="/sounds/mouse-click-sound.mp3"
@@ -207,6 +210,7 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Kanban Board"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -237,9 +241,13 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
                   className={`btn btn-md ${buttonColor} btn-outline`}
                   onClick={() => {
                     setSelectedColumn(key);
-                    setShowModal(true);
+                    setIsEditing(false);
+                    setNewTaskData({ title: "", description: "", deadline: "", priority: "", status: "" });
+                    setShowModal(true); // To render the modal
+                    dialogRef.current?.showModal(); // To open it accessibly
                     if (isSoundOn) new Audio("/sounds/click.mp3").play();
                   }}
+                  aria-label={`Add new task to ${label} column`}
                 >
                   +
                 </button>
@@ -253,6 +261,13 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
                     draggable
                     onDragStart={(e) => onDragStart(e, task, key)}
                     onClick={() => openEditModal(task, key)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        openEditModal(task, key);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
                   >
                     <div className="p-2 flex justify-between items-start">
                       <div className="flex gap-2">
@@ -274,9 +289,10 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
                         <button
                           className="text-red-500 hover:text-red-400 rounded-full w-6 h-6 flex items-center justify-center"
                           onClick={(e) => {
-                            e.stopPropagation();
+                            e.stopPropagation(); // Prevent opening edit modal
                             deleteTask(key, task.id);
                           }}
+                          aria-label={`Delete task: ${task.title.substring(0, 30)}${task.title.length > 30 ? "..." : ""}`}
                         >
                           <SquareX className="w-4 h-4" />
                         </button>
@@ -306,33 +322,44 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
         )}
       </div>
 
-      {showModal && (
-        <dialog open className="modal modal-open">
+      {showModal && ( // Keep conditional rendering for the dialog element itself
+        <dialog ref={dialogRef} className="modal"> {/* Removed modal-open, open is handled by showModal() */}
           <div className="modal-box bg-neutral text-white rounded-2xl max-w-md w-full">
-            <h3 className="text-xl font-bold mb-4">
-              {isEditing ? "Edit Task" : "New Task"}
-            </h3>
-            <input
-              type="text"
-              placeholder="Title"
-              className="input input-bordered border-primary input-md w-full mb-3"
-              value={newTaskData.title}
-              onChange={(e) =>
-                setNewTaskData({ ...newTaskData, title: e.target.value })
-              }
-            />
-            <textarea
-              className="textarea textarea-bordered border-primary w-full h-24 text-sm mb-3"
-              placeholder="Description"
-              value={newTaskData.description}
-              onChange={(e) =>
-                setNewTaskData({ ...newTaskData, description: e.target.value })
-              }
-            />
-            <div className="mb-3 flex items-center gap-2">
-              <Flag className="w-4 h-4 text-red-500" />
+            <form method="dialog" className="space-y-4"> {/* method="dialog" helps with basic close on Esc, but explicit close is better */}
+              <h3 className="text-xl font-bold">
+                {isEditing ? "Edit Task" : "New Task"}
+              </h3>
+              <div>
+              <label htmlFor="task-title" className="sr-only">Title</label>
               <input
                 type="text"
+                id="task-title"
+                placeholder="Title"
+                className="input input-bordered border-primary input-md w-full mb-3"
+                value={newTaskData.title}
+                onChange={(e) =>
+                  setNewTaskData({ ...newTaskData, title: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label htmlFor="task-description" className="sr-only">Description</label>
+              <textarea
+                id="task-description"
+                className="textarea textarea-bordered border-primary w-full h-24 text-sm mb-3"
+                placeholder="Description"
+                value={newTaskData.description}
+                onChange={(e) =>
+                  setNewTaskData({ ...newTaskData, description: e.target.value })
+                }
+              />
+            </div>
+            <div className="mb-3 flex items-center gap-2">
+              <Flag className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <label htmlFor="task-deadline" className="sr-only">Deadline</label>
+              <input
+                type="text"
+                id="task-deadline"
                 placeholder="Deadline (dd/mm/yyyy)"
                 className="input input-sm input-bordered border-primary w-full"
                 value={newTaskData.deadline}
@@ -343,10 +370,11 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
             </div>
             <div className="mb-4 flex gap-2">
               <div className="w-1/2">
-                <label className="text-sm font-semibold mb-1 block">
+                <label htmlFor="task-priority" className="text-sm font-semibold mb-1 block">
                   Priority
                 </label>
                 <select
+                  id="task-priority"
                   className="select select-bordered border-primary w-full"
                   value={newTaskData.priority}
                   onChange={(e) =>
@@ -365,10 +393,11 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
                 </select>
               </div>
               <div className="w-1/2">
-                <label className="text-sm font-semibold mb-1 block">
+                <label htmlFor="task-status" className="text-sm font-semibold mb-1 block">
                   Status
                 </label>
                 <select
+                  id="task-status"
                   className="select select-bordered border-primary w-full"
                   value={newTaskData.status}
                   onChange={(e) =>
@@ -389,21 +418,25 @@ const KanbanBoard = ({ onClose, isSoundOn }) => {
             </div>
             <div className="modal-action">
               <button
+                type="button" // Important for forms within dialog
                 className="btn btn-sm btn-outline"
                 onClick={() => {
                   if (isSoundOn) new Audio("/sounds/click.mp3").play();
-                  setShowModal(false);
+                  dialogRef.current?.close();
+                  setShowModal(false); // Also update state if still using it for conditional rendering
                 }}
               >
                 Cancel
               </button>
               <button
+                type="button" // Important for forms within dialog
                 className="btn btn-sm btn-primary"
                 onClick={addOrUpdateTask}
               >
                 {isEditing ? "Update Task" : "Add Task"}
               </button>
             </div>
+            </form> {/* Closing form tag */}
           </div>
         </dialog>
       )}

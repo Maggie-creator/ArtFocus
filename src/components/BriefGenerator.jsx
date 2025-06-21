@@ -22,6 +22,7 @@ function BriefGenerator({ onClose, isSoundOn }) {
   const audioContextRef = useRef(null);
   const closeSoundRef = useRef(null);
   const clickSoundRef = useRef(null);
+  const briefContentRef = useRef(null); // For focusing generated brief
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -47,30 +48,28 @@ function BriefGenerator({ onClose, isSoundOn }) {
   }, []);
 
   const playCloseSound = () => {
-    if (isSoundOn) {
-      new Audio("/sounds/click.mp3")
-        .play()
-        .catch((err) => console.error("click.mp3 error:", err));
-    }
-    if (audioContextRef.current && closeSoundRef.current) {
-      const src = audioContextRef.current.createBufferSource();
-      src.buffer = closeSoundRef.current;
-      src.connect(audioContextRef.current.destination);
-      src.start();
+    if (isSoundOn && audioContextRef.current && closeSoundRef.current) {
+      try {
+        const src = audioContextRef.current.createBufferSource();
+        src.buffer = closeSoundRef.current;
+        src.connect(audioContextRef.current.destination);
+        src.start();
+      } catch (err) {
+        console.error("Error playing close sound:", err);
+      }
     }
   };
 
   const playMouseClickSound = () => {
-    if (isSoundOn) {
-      new Audio("/sounds/click.mp3")
-        .play()
-        .catch((err) => console.error("click.mp3 error:", err));
-    }
-    if (audioContextRef.current && clickSoundRef.current) {
-      const src = audioContextRef.current.createBufferSource();
-      src.buffer = clickSoundRef.current;
-      src.connect(audioContextRef.current.destination);
-      src.start();
+    if (isSoundOn && audioContextRef.current && clickSoundRef.current) {
+      try {
+        const src = audioContextRef.current.createBufferSource();
+        src.buffer = clickSoundRef.current;
+        src.connect(audioContextRef.current.destination);
+        src.start();
+      } catch (err) {
+        console.error("Error playing mouse click sound:", err);
+      }
     }
   };
 
@@ -142,6 +141,9 @@ function BriefGenerator({ onClose, isSoundOn }) {
     setBrief({ ...newBrief, header, body });
     setViewMode("email");
     setCopied(false);
+    setTimeout(() => {
+      briefContentRef.current?.focus();
+    }, 0);
   };
 
   const copyToClipboard = () => {
@@ -186,6 +188,7 @@ function BriefGenerator({ onClose, isSoundOn }) {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Brief Generator"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -197,7 +200,9 @@ function BriefGenerator({ onClose, isSoundOn }) {
       </h1>
 
       {error && (
-        <p className="text-red-400 text-xs text-center mb-2">{error}</p>
+        <div role="alert" className="text-red-400 text-xs text-center mb-2">
+          <p>{error}</p>
+        </div>
       )}
       <button
         onClick={generateBrief}
@@ -206,6 +211,11 @@ function BriefGenerator({ onClose, isSoundOn }) {
         Generate Brief
       </button>
 
+      {/* Visually hidden span for copy-to-clipboard announcements */}
+      <span aria-live="polite" className="sr-only">
+        {copied ? "Content copied to clipboard" : ""}
+      </span>
+
       {brief && (
         <div
           className={`rounded-md shadow overflow-hidden text-sm relative ${
@@ -213,6 +223,10 @@ function BriefGenerator({ onClose, isSoundOn }) {
               ? "bg-white text-gray-800"
               : "bg-base-300 text-white"
           }`}
+          aria-live="polite"
+          aria-atomic="true"
+          ref={briefContentRef} // For focusing
+           tabIndex="-1" // Make it focusable
         >
           {viewMode === "email" ? (
             <>

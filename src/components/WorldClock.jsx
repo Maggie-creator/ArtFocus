@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { SquareX } from "lucide-react";
 import Fuse from "fuse.js";
 
@@ -23,6 +23,7 @@ const WorldClock = ({ onClose, isSoundOn }) => {
 
   const clickSoundRef = useRef(null);
   const closeSoundRef = useRef(null);
+  const cityInputRef = useRef(null); // For focusing after add
 
   const [isClosing, setIsClosing] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -43,10 +44,10 @@ const WorldClock = ({ onClose, isSoundOn }) => {
     }
   };
 
-  const updateTimes = () => {
+  const updateTimes = useCallback(() => {
     const now = {};
     timeZones.forEach(({ city, zone }) => {
-      try {
+      try { // Corrected try block
         const formatter = new Intl.DateTimeFormat([], {
           timeZone: zone,
           weekday: "short",
@@ -63,13 +64,13 @@ const WorldClock = ({ onClose, isSoundOn }) => {
       }
     });
     setTimes(now);
-  };
+  }, [timeZones]); // Added timeZones to useCallback dependency array
 
   useEffect(() => {
     updateTimes();
     const interval = setInterval(updateTimes, 1000);
     return () => clearInterval(interval);
-  }, [timeZones]);
+  }, [updateTimes]); // Added updateTimes to useEffect dependency array
 
   useEffect(() => {
     localStorage.setItem("worldClockCities", JSON.stringify(timeZones));
@@ -104,6 +105,8 @@ const WorldClock = ({ onClose, isSoundOn }) => {
         playClickSound();
         addCity();
       }
+    } else if (e.key === "Escape") {
+      setZoneSuggestions([]); // Close suggestions on Escape
     }
   };
 
@@ -117,6 +120,7 @@ const WorldClock = ({ onClose, isSoundOn }) => {
   const handleZoneSuggestionClick = (suggestion) => {
     setNewZoneInput(suggestion);
     setZoneSuggestions([]);
+    // Optionally, focus the "Add" button or City input here
   };
 
   const addCity = () => {
@@ -129,6 +133,7 @@ const WorldClock = ({ onClose, isSoundOn }) => {
     setNewZoneInput("");
     setZoneSuggestions([]);
     setActiveSuggestion(0);
+    cityInputRef.current?.focus(); // Focus city input after adding
   };
 
   const removeCity = (cityToRemove) => {
@@ -137,7 +142,7 @@ const WorldClock = ({ onClose, isSoundOn }) => {
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
+    if (closeSoundRef.current) { // isSoundOn check is already in playClickSound/playCloseSound
       closeSoundRef.current.currentTime = 0;
       closeSoundRef.current
         .play()
@@ -170,6 +175,7 @@ const WorldClock = ({ onClose, isSoundOn }) => {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close World Clock"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -195,8 +201,11 @@ const WorldClock = ({ onClose, isSoundOn }) => {
 
       {/* City Input */}
       <div className="gap-2 mb-4">
+        <label htmlFor="city-input" className="sr-only">City</label>
         <input
           type="text"
+          id="city-input"
+          ref={cityInputRef} // For focusing after add
           className="input input-border border-primary w-full bg-base-100 text-white p-4"
           placeholder="City"
           value={newCity}
@@ -207,8 +216,15 @@ const WorldClock = ({ onClose, isSoundOn }) => {
 
       {/* Time Zone Input */}
       <div className="mb-4 relative z-[9000]">
+        <label htmlFor="zone-input" className="sr-only">Time Zone</label>
         <input
           type="text"
+          id="zone-input"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded={zoneSuggestions.length > 0}
+          aria-controls="zone-suggestions-list"
+          aria-activedescendant={activeSuggestion >= 0 && zoneSuggestions.length > 0 ? `suggestion-${activeSuggestion}` : undefined}
           className="input input-border border-primary w-full bg-base-10 text-white"
           placeholder="Time Zone"
           value={newZoneInput}
@@ -216,16 +232,29 @@ const WorldClock = ({ onClose, isSoundOn }) => {
           onKeyDown={handleZoneKeyDown}
         />
         {zoneSuggestions.length > 0 && (
-          <ul className="absolute z-[9000] bg-gray-900 text-white w-full mt-1 rounded shadow max-h-40 overflow-y-auto text-left border border-base-300">
+          <ul
+            id="zone-suggestions-list"
+            role="listbox"
+            className="absolute z-[9000] bg-gray-900 text-white w-full mt-1 rounded shadow max-h-40 overflow-y-auto text-left border border-base-300"
+          >
             {zoneSuggestions.map((suggestion, index) => (
               <li
                 key={suggestion}
+                id={`suggestion-${index}`}
+                role="option"
+                aria-selected={index === activeSuggestion}
                 className={`px-2 py-1 cursor-pointer ${
                   index === activeSuggestion
                     ? "bg-primary text-white"
                     : "hover:bg-gray-700"
                 }`}
-                onMouseDown={() => handleZoneSuggestionClick(suggestion)}
+                onClick={() => handleZoneSuggestionClick(suggestion)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleZoneSuggestionClick(suggestion);
+                  }
+                }}
+                tabIndex={-1} // To be programmatically focusable if needed, though usually not directly tabbed to.
               >
                 {suggestion}
               </li>
@@ -265,6 +294,7 @@ const WorldClock = ({ onClose, isSoundOn }) => {
                 <button
                   className="text-red-500 hover:text-red-700 p-1"
                   onClick={() => removeCity(city)}
+                  aria-label={`Remove ${city} clock`}
                 >
                   <SquareX className="w-5 h-5" />
                 </button>

@@ -156,7 +156,7 @@ const App = () => {
       </div>
 
       {/* Main Content */}
-      <div
+      <main
         className="relative z-[9998] w-full overflow-x-hidden"
         style={{ paddingTop: navbarHeight, paddingBottom: footerHeight }}
       >
@@ -246,7 +246,7 @@ const App = () => {
             )}
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Footer */}
       <div ref={footerRef} className="fixed bottom-0 left-0 w-full z-[9999]">

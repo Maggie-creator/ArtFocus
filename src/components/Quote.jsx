@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { SquareX } from "lucide-react";
 
 const QUOTES_API_URL =
@@ -13,7 +13,7 @@ const Quote = ({ onClose, isSoundOn }) => {
   const closeSoundRef = useRef(null);
   const clickSoundRef = useRef(null);
 
-  const fetchQuote = async () => {
+  const fetchQuote = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -96,7 +96,7 @@ const Quote = ({ onClose, isSoundOn }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isSoundOn]); // Added isSoundOn to useCallback dependency array
 
   const handleClose = () => {
     if (closeSoundRef.current) {
@@ -116,7 +116,7 @@ const Quote = ({ onClose, isSoundOn }) => {
 
   useEffect(() => {
     fetchQuote();
-  }, []);
+  }, [fetchQuote]); // Added fetchQuote to useEffect dependency array
 
   if (!visible) return null;
 
@@ -151,16 +151,20 @@ const Quote = ({ onClose, isSoundOn }) => {
       <figure>
         <img
           src="https://cdnb.artstation.com/p/assets/images/images/052/313/339/4k/sebastian-luca-daily-037-2.jpg?1659477220"
-          alt="Sebastian Luca"
+          alt=""
         />
       </figure>
 
       <div className="card-body items-center justify-center text-center">
-        {loading ? (
-          <h2 className="text-xl">Loading...</h2>
-        ) : (
-          <h2 className="text-2xl carattere-regular">{quote}</h2>
-        )}
+        <div aria-live="polite" aria-atomic="true" className="w-full">
+          {loading ? (
+            <p className="text-xl">Loading...</p> // Changed to p for loading message
+          ) : (
+            <blockquote className="text-2xl carattere-regular">
+              {quote}
+            </blockquote>
+          )}
+        </div>
       </div>
     </div>
   );

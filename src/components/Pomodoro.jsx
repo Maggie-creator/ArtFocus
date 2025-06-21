@@ -141,6 +141,7 @@ function Pomodoro({ onClose, isSoundOn }) {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Pomodoro timer"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -184,6 +185,7 @@ function Pomodoro({ onClose, isSoundOn }) {
           loop
           autoplay
           style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
+          aria-hidden="true"
         />
       </div>
 
@@ -194,14 +196,22 @@ function Pomodoro({ onClose, isSoundOn }) {
 
       {/* Controls */}
       <div className="flex justify-center gap-4 mb-4">
-        <button onClick={handlePlayPause} className="btn btn-primary">
+        <button
+          onClick={handlePlayPause}
+          className="btn btn-primary"
+          aria-label={isRunning ? "Pause timer" : "Play timer"}
+        >
           {isRunning ? (
             <Pause className="w-5 h-5" />
           ) : (
             <Play className="w-5 h-5" />
           )}
         </button>
-        <button onClick={handleReset} className="btn btn-secondary">
+        <button
+          onClick={handleReset}
+          className="btn btn-secondary"
+          aria-label="Reset timer"
+        >
           <RotateCcw className="w-5 h-5" />
         </button>
       </div>
@@ -209,24 +219,26 @@ function Pomodoro({ onClose, isSoundOn }) {
       {/* Duration Settings */}
       <div className="mt-4 space-y-2">
         <div>
-          <label className="label">
+          <label htmlFor="work-duration-input" className="label">
             <span className="label-text mb-2">Work Duration (minutes)</span>
           </label>
           <input
             type="number"
+            id="work-duration-input"
             className="input input-bordered border-primary w-full"
             value={workDuration}
             onChange={(e) => setWorkDuration(Number(e.target.value))}
           />
         </div>
         <div>
-          <label className="label">
+          <label htmlFor="break-duration-input" className="label">
             <span className="label-text mb-2 mt-2">
               Break Duration (minutes)
             </span>
           </label>
           <input
             type="number"
+            id="break-duration-input"
             className="input input-bordered border-primary w-full"
             value={breakDuration}
             onChange={(e) => setBreakDuration(Number(e.target.value))}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react"; // Combined and corrected import
 import {
   TimerReset,
   Clock10,
@@ -23,6 +23,9 @@ const Navbar = ({
   isSoundOn,
   toggleSound,
 }) => {
+  const [isBgDropdownOpen, setIsBgDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null); // Ref for the dropdown container
+
   const tools = [
     [
       "Pomodoro Timer",
@@ -72,8 +75,22 @@ const Navbar = ({
     ],
   ];
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsBgDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
+
   return (
-    <div className="navbar px-4 sticky top-0 z-[9999] backdrop-blur-sm">
+    <nav className="navbar px-4 sticky top-0 z-[9999] backdrop-blur-sm" aria-label="Main navigation">
       {/* Navbar Start */}
       <div className="navbar-start">
         <img
@@ -102,6 +119,7 @@ const Navbar = ({
                       : "btn-neutral shadow-neutral/50"
                   }`}
                   aria-label={tip}
+                  aria-pressed={isVisible}
                 >
                   <Icon className="w-5 h-5" />
                 </button>
@@ -112,47 +130,51 @@ const Navbar = ({
           <div className="divider divider-horizontal"></div>
 
           {/* 🎨 Background Selector */}
-          <div className="dropdown dropdown-start z-[9999]">
-            <label
-              tabIndex={0}
+          <div className="dropdown dropdown-start z-[9999]" ref={dropdownRef}>
+            <button
+              onClick={() => setIsBgDropdownOpen(!isBgDropdownOpen)}
               className="btn btn-accent btn-outline tooltip tooltip-bottom tooltip-secondary flex justify-center items-center"
               data-tip="Change Background"
               aria-label="Change Background"
+              aria-haspopup="true"
+              aria-expanded={isBgDropdownOpen}
             >
               <span className="text-lg">🎨</span>
-            </label>
-            <ul
-              tabIndex={0}
-              className="dropdown-content menu p-2 shadow bg-base-300 rounded-box w-60 z-[100] text-base-content"
-            >
-              <li>
-                <button onClick={() => onBackgroundChange("background1")}>
-                  <span className="italic">"Sketch of the Day"</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  onClick={() => onBackgroundChange("lost_land_fairy_land")}
-                >
-                  <span className="italic">"Lost Land, Fairy Land"</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onBackgroundChange("different_worlds")}>
-                  <span className="italic">"Different Worlds"</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onBackgroundChange("A_Floating_City")}>
-                  <span className="italic">"A Floating City"</span>
-                </button>
-              </li>
-              <li>
-                <button onClick={() => onBackgroundChange("Quiet_Day")}>
-                  <span className="italic">"Quiet Day"</span>
-                </button>
-              </li>
-            </ul>
+            </button>
+            {isBgDropdownOpen && (
+              <ul
+                className="dropdown-content menu p-2 shadow bg-base-300 rounded-box w-60 z-[100] text-base-content"
+                role="menu"
+              >
+                <li>
+                  <button onClick={() => { onBackgroundChange("background1"); setIsBgDropdownOpen(false); }}>
+                    <span className="italic">"Sketch of the Day"</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => { onBackgroundChange("lost_land_fairy_land"); setIsBgDropdownOpen(false); }}
+                  >
+                    <span className="italic">"Lost Land, Fairy Land"</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => { onBackgroundChange("different_worlds"); setIsBgDropdownOpen(false);}}>
+                    <span className="italic">"Different Worlds"</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => { onBackgroundChange("A_Floating_City"); setIsBgDropdownOpen(false);}}>
+                    <span className="italic">"A Floating City"</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => { onBackgroundChange("Quiet_Day"); setIsBgDropdownOpen(false);}}>
+                    <span className="italic">"Quiet Day"</span>
+                  </button>
+                </li>
+              </ul>
+            )}
           </div>
 
           {/* 🔊 Sound Toggle Button */}
@@ -166,6 +188,7 @@ const Navbar = ({
                 isSoundOn ? "btn-accent" : "btn-error"
               } btn-outline shadow`}
               aria-label={isSoundOn ? "Turn sound off" : "Turn sound on"}
+              aria-pressed={isSoundOn}
             >
               {isSoundOn ? (
                 <Volume2 className="w-5 h-5" />
@@ -176,7 +199,7 @@ const Navbar = ({
           </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 };
 

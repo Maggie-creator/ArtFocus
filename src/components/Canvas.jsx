@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SquareX } from "lucide-react";
 
-const Canvas = ({ onClose }) => {
+const Canvas = ({ onClose, isSoundOn }) => {
   const SUMO_PAINT_URL = "https://paint.sumo.app/";
   const SUMO_3D_URL = "https://3d.sumo.app/?lang=en";
 
@@ -23,9 +23,18 @@ const Canvas = ({ onClose }) => {
   }, []);
 
   const handleClose = () => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
+    }
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing Canvas close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Canvas close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -35,17 +44,35 @@ const Canvas = ({ onClose }) => {
   };
 
   const handleOpenFullscreen = () => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
+    }
     if (clickSoundRef.current) {
       clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(error => console.error("Error playing Canvas click sound:", error));
+      clickSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Canvas click sound:", error)
+        );
     }
     window.open(softwareMap[selectedTool], "_blank");
   };
 
   const handleToolChange = (e) => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
+    }
     if (clickSoundRef.current) {
       clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(error => console.error("Error playing Canvas click sound:", error));
+      clickSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Canvas click sound:", error)
+        );
     }
     setSelectedTool(e.target.value);
   };
@@ -80,7 +107,7 @@ const Canvas = ({ onClose }) => {
 
       {/* Tool selection dropdown */}
       <select
-        className="select select-secondary w-full max-w-xs mb-4" // Added mb-4 for spacing
+        className="select select-secondary w-full max-w-xs mb-4"
         value={selectedTool}
         onChange={handleToolChange}
       >

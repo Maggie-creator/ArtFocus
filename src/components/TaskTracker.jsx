@@ -1,9 +1,8 @@
-// components/TaskTracker.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Trash2, SquareX } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
-function TaskTracker({ onClose }) {
+function TaskTracker({ onClose, isSoundOn }) {
   const [taskInput, setTaskInput] = useState("");
   const [selectedTab, setSelectedTab] = useState("work");
   const [tasks, setTasks] = useState({
@@ -25,10 +24,10 @@ function TaskTracker({ onClose }) {
     }
 
     let idsWereAdded = false;
-    Object.keys(tasksToLoad).forEach(category => {
+    Object.keys(tasksToLoad).forEach((category) => {
       if (Array.isArray(tasksToLoad[category])) {
-        tasksToLoad[category].forEach(task => {
-          if (!task.hasOwnProperty('id') || task.id === undefined) {
+        tasksToLoad[category].forEach((task) => {
+          if (!task.hasOwnProperty("id") || task.id === undefined) {
             task.id = uuidv4();
             idsWereAdded = true;
           }
@@ -53,9 +52,13 @@ function TaskTracker({ onClose }) {
 
   const addTask = () => {
     if (taskInput.trim()) {
-      if (clickSoundRef.current) {
+      if (clickSoundRef.current && isSoundOn) {
         clickSoundRef.current.currentTime = 0;
-        clickSoundRef.current.play().catch(error => console.error("Error playing TaskTracker click sound:", error));
+        clickSoundRef.current
+          .play()
+          .catch((error) =>
+            console.error("Error playing TaskTracker click sound:", error)
+          );
       }
       setTasks((prev) => ({
         ...prev,
@@ -92,9 +95,13 @@ function TaskTracker({ onClose }) {
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
+    if (closeSoundRef.current && isSoundOn) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing TaskTracker close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing TaskTracker close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -109,7 +116,6 @@ function TaskTracker({ onClose }) {
     }
   };
 
-  // Determine styles dynamically
   const inputBorderClass = {
     work: "border-primary",
     personal: "border-secondary",
@@ -141,9 +147,7 @@ function TaskTracker({ onClose }) {
         {tasks[tabKey].map((task) => (
           <li
             key={task.id}
-            className={`flex justify-between items-center px-3 py-2 rounded ${
-              task.completed ? "bg-neutral text-white" : "bg-neutral text-white"
-            }`}
+            className="flex justify-between items-center px-3 py-2 rounded bg-neutral text-white"
           >
             <span
               className={`cursor-pointer flex-1 ${
@@ -184,9 +188,7 @@ function TaskTracker({ onClose }) {
       className={`relative z-[60] card card-border bg-base-100 w-96 p-4 shadow-xl shadow-neutral-950/50 text-base-content transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
       } pb-20`}
-      style={{ willChange: "opacity" }}
     >
-      {/* Close Button with Tooltip */}
       <div className="absolute top-0 right-0 m-2 z-[999]">
         <div
           className="tooltip tooltip-right tooltip-primary z-[999]"
@@ -202,14 +204,12 @@ function TaskTracker({ onClose }) {
         </div>
       </div>
 
-      {/* Close Sound */}
+      {/* Sounds */}
       <audio
         ref={closeSoundRef}
         src="/sounds/notebook-close-83836.mp3"
         preload="auto"
       />
-
-      {/* Click Sound */}
       <audio
         ref={clickSoundRef}
         src="/sounds/mouse-click-sound.mp3"
@@ -220,32 +220,27 @@ function TaskTracker({ onClose }) {
         To-Do List
       </h1>
 
-      {/* Badge Tabs */}
+      {/* Tabs */}
       <div className="flex justify-center gap-2 mb-4 flex-wrap">
-        <div
-          className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
-            selectedTab === "work" ? "badge-primary" : "bg-ghost"
-          }`}
-          onClick={() => handleTabChange("work")}
-        >
-          Work
-        </div>
-        <div
-          className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
-            selectedTab === "personal" ? "badge-secondary" : "bg-ghost"
-          }`}
-          onClick={() => handleTabChange("personal")}
-        >
-          Personal
-        </div>
-        <div
-          className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
-            selectedTab === "education" ? "badge-accent" : "bg-ghost"
-          }`}
-          onClick={() => handleTabChange("education")}
-        >
-          Education
-        </div>
+        {["work", "personal", "education"].map((tab) => (
+          <div
+            key={tab}
+            className={`badge badge-soft cursor-pointer px-4 py-2 text-sm ${
+              selectedTab === tab
+                ? `badge-${
+                    tab === "work"
+                      ? "primary"
+                      : tab === "personal"
+                      ? "secondary"
+                      : "accent"
+                  }`
+                : "bg-ghost"
+            }`}
+            onClick={() => handleTabChange(tab)}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </div>
+        ))}
       </div>
 
       {renderTabContent(selectedTab)}

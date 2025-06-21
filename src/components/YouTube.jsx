@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import ReactPlayer from "react-player/youtube";
 import { SquareX } from "lucide-react";
 
-const YouTubePlayer = ({ onClose }) => {
+const YouTubePlayer = ({ onClose, isSoundOn }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isClosing, setIsClosing] = useState(false);
   const [isValidYouTubeUrl, setIsValidYouTubeUrl] = useState(true);
@@ -10,21 +10,44 @@ const YouTubePlayer = ({ onClose }) => {
 
   const handleUrlChange = (event) => {
     const newUrl = event.target.value;
+
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) =>
+          console.error("Error playing click sound on URL input:", err)
+        );
+    }
+
     setVideoUrl(newUrl);
+
     if (newUrl.trim() === "") {
       setIsValidYouTubeUrl(true); // Reset validation if input is empty
     } else {
-      // Basic check for youtube.com or youtu.be links
-      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+      const youtubeRegex =
+        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
       setIsValidYouTubeUrl(youtubeRegex.test(newUrl));
     }
   };
 
   const handleClose = () => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) =>
+          console.error("Error playing click sound on close:", err)
+        );
+    }
+
     if (closeClickAudioRef.current) {
       closeClickAudioRef.current.currentTime = 0;
-      closeClickAudioRef.current.play().catch(error => console.error("Error playing YouTube close sound:", error));
+      closeClickAudioRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing YouTube close sound:", error)
+        );
     }
+
     setIsClosing(true);
     setTimeout(onClose, 150); // matches transition duration
   };
@@ -61,6 +84,15 @@ const YouTubePlayer = ({ onClose }) => {
         onChange={handleUrlChange}
         placeholder="Enter YouTube video URL"
         className="input input-bordered border-primary w-full"
+        onFocus={() => {
+          if (isSoundOn) {
+            new Audio("/sounds/click.mp3")
+              .play()
+              .catch((err) =>
+                console.error("Error playing click sound on focus:", err)
+              );
+          }
+        }}
       />
 
       {/* Validation Message */}

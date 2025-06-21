@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { SquareX } from "lucide-react";
 
-const ReferenceImages = ({ onClose }) => {
+const ReferenceImages = ({ onClose, isSoundOn }) => {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const imageResizeRef = useRef(null);
@@ -20,7 +20,6 @@ const ReferenceImages = ({ onClose }) => {
       width: 96,
       height: 96,
     }));
-
     setImages((prevImages) => [...prevImages, ...imageData]);
   };
 
@@ -68,7 +67,7 @@ const ReferenceImages = ({ onClose }) => {
   };
 
   const playClickSound = () => {
-    if (audioContextRef.current && clickBufferRef.current) {
+    if (isSoundOn && audioContextRef.current && clickBufferRef.current) {
       const source = audioContextRef.current.createBufferSource();
       source.buffer = clickBufferRef.current;
       source.connect(audioContextRef.current.destination);
@@ -77,7 +76,7 @@ const ReferenceImages = ({ onClose }) => {
   };
 
   const playCloseSound = () => {
-    if (audioContextRef.current && closeBufferRef.current) {
+    if (isSoundOn && audioContextRef.current && closeBufferRef.current) {
       const source = audioContextRef.current.createBufferSource();
       source.buffer = closeBufferRef.current;
       source.connect(audioContextRef.current.destination);
@@ -227,9 +226,12 @@ const ReferenceImages = ({ onClose }) => {
               ].map(({ corner, style }, i) => {
                 let ariaLabel = "";
                 if (corner === "top-left") ariaLabel = "Resize from top-left";
-                else if (corner === "top-right") ariaLabel = "Resize from top-right";
-                else if (corner === "bottom-left") ariaLabel = "Resize from bottom-left";
-                else if (corner === "bottom-right") ariaLabel = "Resize from bottom-right";
+                else if (corner === "top-right")
+                  ariaLabel = "Resize from top-right";
+                else if (corner === "bottom-left")
+                  ariaLabel = "Resize from bottom-left";
+                else if (corner === "bottom-right")
+                  ariaLabel = "Resize from bottom-right";
 
                 return (
                   <div

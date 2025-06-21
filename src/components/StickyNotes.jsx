@@ -13,7 +13,7 @@ const ColorOptions = {
   Yellow: "#feff9c",
 };
 
-function StickyNotes({ onClose }) {
+function StickyNotes({ onClose, isSoundOn }) {
   const [notes, setNotes] = useState(
     () => JSON.parse(localStorage.getItem("sticky_notes")) || []
   );
@@ -43,6 +43,10 @@ function StickyNotes({ onClose }) {
   };
 
   const addNote = () => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3").play();
+    }
+
     const newName = `Note ${notes.length + 1}`;
     const newNote = {
       id: uuidv4(),
@@ -88,7 +92,11 @@ function StickyNotes({ onClose }) {
   };
 
   const handleClose = () => {
-    closeSoundRef.current?.play().catch(error => console.error("Error playing close sound in StickyNotes:", error));
+    closeSoundRef.current
+      ?.play()
+      .catch((error) =>
+        console.error("Error playing close sound in StickyNotes:", error)
+      );
     setIsClosing(true);
     setTimeout(() => {
       setVisible(false);
@@ -147,7 +155,12 @@ function StickyNotes({ onClose }) {
                   activeTab === idx ? "" : "badge-ghost"
                 }`}
                 style={{ backgroundColor: note.color, color: "black" }}
-                onClick={() => setActiveTab(idx)}
+                onClick={() => {
+                  setActiveTab(idx);
+                  if (isSoundOn) {
+                    new Audio("/sounds/click.mp3").play();
+                  }
+                }}
                 onDoubleClick={() => setEditingTab(idx)}
               >
                 {note.name}
@@ -180,24 +193,33 @@ function StickyNotes({ onClose }) {
           color={current.color}
           removeNote={removeNote}
           editNote={editNoteField}
+          isSoundOn={isSoundOn}
         />
       )}
     </div>
   );
 }
 
-function Sticky({ id, text, color, removeNote, editNote }) {
+function Sticky({ id, text, color, removeNote, editNote, isSoundOn }) {
   const [showColorSelector, setShowColorSelector] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
   const handleToggleSelector = (e) => {
     e.stopPropagation();
     setShowColorSelector((v) => !v);
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3").play();
+    }
   };
+
   const selectColor = (c) => {
     editNote(id, "color", c);
     setShowColorSelector(false);
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3").play();
+    }
   };
+
   const displayColors = () => (
     <div className="mb-1 flex flex-wrap gap-1 p-1">
       {Object.values(ColorOptions).map((c) => (
@@ -219,12 +241,18 @@ function Sticky({ id, text, color, removeNote, editNote }) {
       <div className="card-body font-playpen-sans p-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center gap-2">
-            <div className="tooltip tooltip-right tooltip-secondary" data-tip="Delete note">
+            <div
+              className="tooltip tooltip-right tooltip-secondary"
+              data-tip="Delete note"
+            >
               <button onClick={() => removeNote(id)} aria-label="Delete note">
                 <SquareX className="w-5 h-5 text-red-500 hover:text-red-700" />
               </button>
             </div>
-            <div className="tooltip tooltip-right tooltip-secondary" data-tip="Change note's color">
+            <div
+              className="tooltip tooltip-right tooltip-secondary"
+              data-tip="Change note's color"
+            >
               <MoreHorizontal
                 className="cursor-pointer"
                 onClick={handleToggleSelector}
@@ -249,7 +277,9 @@ function Sticky({ id, text, color, removeNote, editNote }) {
             className="cursor-text text-black mb-2 playpen-sans"
             onClick={() => setIsEditing(true)}
           >
-            <ReactMarkdown>{text || "*Click to write your note*"}</ReactMarkdown>
+            <ReactMarkdown>
+              {text || "*Click to write your note*"}
+            </ReactMarkdown>
           </div>
         )}
       </div>

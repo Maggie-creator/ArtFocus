@@ -1,4 +1,3 @@
-// components/WorldClock.jsx
 import React, { useEffect, useState, useRef } from "react";
 import { SquareX } from "lucide-react";
 import Fuse from "fuse.js";
@@ -10,7 +9,7 @@ const fuse = new Fuse(allTimeZones, {
   threshold: 0.4,
 });
 
-const WorldClock = ({ onClose }) => {
+const WorldClock = ({ onClose, isSoundOn }) => {
   const [timeZones, setTimeZones] = useState(() => {
     const stored = localStorage.getItem("worldClockCities");
     return stored ? JSON.parse(stored) : [];
@@ -34,9 +33,13 @@ const WorldClock = ({ onClose }) => {
   }, []);
 
   const playClickSound = () => {
-    if (clickSoundRef.current) {
+    if (isSoundOn && clickSoundRef.current) {
       clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(error => console.error("Error playing WorldClock click sound:", error));
+      clickSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing WorldClock click sound:", error)
+        );
     }
   };
 
@@ -136,7 +139,11 @@ const WorldClock = ({ onClose }) => {
   const handleClose = () => {
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing WorldClock close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing WorldClock close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -149,7 +156,7 @@ const WorldClock = ({ onClose }) => {
 
   return (
     <div
-      className={`card card-border bg-base-100 max-h-[90vh] overflow-y-auto w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[8000]
+      className={`card card-border bg-base-100 max-h-[90vh] w-96 max-w-md box-border shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center relative z-[8000] overflow-y-auto overflow-x-hidden
         ${isClosing ? "opacity-0" : "opacity-100"}
       `}
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}

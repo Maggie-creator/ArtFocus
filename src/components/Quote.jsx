@@ -4,58 +4,95 @@ import { SquareX } from "lucide-react";
 const QUOTES_API_URL =
   "https://api.allorigins.win/get?url=https://zenquotes.io/api/random/";
 
-const Quote = ({ onClose }) => {
+const Quote = ({ onClose, isSoundOn }) => {
   const [quote, setQuote] = useState("");
   const [loading, setLoading] = useState(true);
   const [isClosing, setIsClosing] = useState(false);
   const [visible, setVisible] = useState(true);
+
   const closeSoundRef = useRef(null);
+  const clickSoundRef = useRef(null);
 
   const fetchQuote = async () => {
     try {
       setLoading(true);
+
+      // Optional: play sound on fetch
+      if (isSoundOn && clickSoundRef.current) {
+        clickSoundRef.current.currentTime = 0;
+        clickSoundRef.current
+          .play()
+          .catch((error) =>
+            console.error("Error playing Quote click sound:", error)
+          );
+      }
+
       const response = await fetch(QUOTES_API_URL);
       if (!response.ok) {
-        // Log specific HTTP error status
-        console.error(`Error fetching quote: HTTP status ${response.status}`, await response.text());
-        setQuote("Failed to fetch quote. Please try again later."); // User-facing message
-        return; // Exit after handling error
+        console.error(
+          `Error fetching quote: HTTP status ${response.status}`,
+          await response.text()
+        );
+        setQuote("Failed to fetch quote. Please try again later.");
+        return;
       }
 
       let data;
       try {
         data = await response.json();
       } catch (parseError) {
-        console.error("Error parsing main JSON response for quote:", parseError);
+        console.error(
+          "Error parsing main JSON response for quote:",
+          parseError
+        );
         setQuote("Failed to process quote data. Please try again later.");
         return;
       }
 
       if (!data.contents) {
-          console.error("Error fetching quote: 'contents' field missing in API response.", data);
-          setQuote("Failed to process quote data (missing contents). Please try again later.");
-          return;
+        console.error(
+          "Error fetching quote: 'contents' field missing in API response.",
+          data
+        );
+        setQuote(
+          "Failed to process quote data (missing contents). Please try again later."
+        );
+        return;
       }
 
       let parsed;
       try {
         parsed = JSON.parse(data.contents);
       } catch (contentParseError) {
-        console.error("Error parsing 'contents' JSON for quote:", contentParseError, "Raw contents:", data.contents);
+        console.error(
+          "Error parsing 'contents' JSON for quote:",
+          contentParseError,
+          "Raw contents:",
+          data.contents
+        );
         setQuote("Failed to process quote content. Please try again later.");
         return;
       }
 
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].q && parsed[0].a) {
+      if (
+        Array.isArray(parsed) &&
+        parsed.length > 0 &&
+        parsed[0].q &&
+        parsed[0].a
+      ) {
         setQuote(`${parsed[0].q} — ${parsed[0].a}`);
       } else {
-        console.error("Error fetching quote: Parsed content is not in the expected format.", parsed);
-        setQuote("Received quote data in an unexpected format. Please try again later.");
+        console.error(
+          "Error fetching quote: Parsed content is not in the expected format.",
+          parsed
+        );
+        setQuote(
+          "Received quote data in an unexpected format. Please try again later."
+        );
       }
-
-    } catch (error) { // Catch network errors or other unexpected issues
+    } catch (error) {
       console.error("Network or unexpected error fetching quote:", error);
-      setQuote("Something went wrong. Please try again later."); // Generic fallback
+      setQuote("Something went wrong. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -64,7 +101,11 @@ const Quote = ({ onClose }) => {
   const handleClose = () => {
     if (closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing Quote close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Quote close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -95,7 +136,12 @@ const Quote = ({ onClose }) => {
         <SquareX className="w-6 h-6" />
       </button>
 
-      {/* Close Sound */}
+      {/* Sounds */}
+      <audio
+        ref={clickSoundRef}
+        src="/sounds/mouse-click-sound.mp3"
+        preload="auto"
+      />
       <audio
         ref={closeSoundRef}
         src="/sounds/notebook-close-83836.mp3"

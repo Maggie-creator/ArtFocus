@@ -1,9 +1,8 @@
-// components/Pomodoro.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw, SquareX } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-function Pomodoro({ onClose }) {
+function Pomodoro({ onClose, isSoundOn }) {
   const [isRunning, setIsRunning] = useState(false);
   const [workDuration, setWorkDuration] = useState(25);
   const [breakDuration, setBreakDuration] = useState(5);
@@ -29,7 +28,13 @@ function Pomodoro({ onClose }) {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timerRef.current);
-            new Audio("/sounds/bell.mp3").play().catch(error => console.error("Error playing bell sound:", error));
+            if (isSoundOn) {
+              new Audio("/sounds/bell.mp3")
+                .play()
+                .catch((error) =>
+                  console.error("Error playing bell sound:", error)
+                );
+            }
             const nextSession = isWorkTime ? breakDuration : workDuration;
             setIsWorkTime(!isWorkTime);
             setSecondsLeft(nextSession * 60);
@@ -41,26 +46,36 @@ function Pomodoro({ onClose }) {
       }, 1000);
     }
     return () => clearInterval(timerRef.current);
-  }, [isRunning, isWorkTime, breakDuration, workDuration]);
+  }, [isRunning, isWorkTime, breakDuration, workDuration, isSoundOn]);
 
   useEffect(() => {
     if (isRunning && tickingSoundRef.current) {
       tickingSoundRef.current.loop = true;
-      tickingSoundRef.current.play().catch(error => console.error("Error playing ticking sound:", error));
+      if (isSoundOn) {
+        tickingSoundRef.current
+          .play()
+          .catch((error) =>
+            console.error("Error playing ticking sound:", error)
+          );
+      }
     } else if (tickingSoundRef.current) {
       tickingSoundRef.current.pause();
       tickingSoundRef.current.currentTime = 0;
     }
-  }, [isRunning]);
+  }, [isRunning, isSoundOn]);
 
   useEffect(() => {
     if (prevIsWorkTimeRef.current !== isWorkTime && !isWorkTime) {
-      if (serviceBellRef.current) {
-        serviceBellRef.current.play().catch(error => console.error("Error playing service bell sound:", error));
+      if (serviceBellRef.current && isSoundOn) {
+        serviceBellRef.current
+          .play()
+          .catch((error) =>
+            console.error("Error playing service bell sound:", error)
+          );
       }
     }
     prevIsWorkTimeRef.current = isWorkTime;
-  }, [isWorkTime]);
+  }, [isWorkTime, isSoundOn]);
 
   const formatTime = (secs) => {
     const mins = Math.floor(secs / 60);
@@ -71,9 +86,13 @@ function Pomodoro({ onClose }) {
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
+    if (closeSoundRef.current && isSoundOn) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing Pomodoro close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Pomodoro close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -83,17 +102,25 @@ function Pomodoro({ onClose }) {
   };
 
   const handlePlayPause = () => {
-    if (mouseClickRef.current) {
+    if (mouseClickRef.current && isSoundOn) {
       mouseClickRef.current.currentTime = 0;
-      mouseClickRef.current.play().catch(error => console.error("Error playing mouse click sound:", error));
+      mouseClickRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing mouse click sound:", error)
+        );
     }
     setIsRunning(!isRunning);
   };
 
   const handleReset = () => {
-    if (mouseClickRef.current) {
+    if (mouseClickRef.current && isSoundOn) {
       mouseClickRef.current.currentTime = 0;
-      mouseClickRef.current.play().catch(error => console.error("Error playing mouse click sound:", error));
+      mouseClickRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing mouse click sound:", error)
+        );
     }
     setIsRunning(false);
     setSecondsLeft(workDuration * 60);

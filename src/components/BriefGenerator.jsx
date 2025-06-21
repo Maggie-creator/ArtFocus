@@ -4,7 +4,7 @@ import { ClipboardCopy, Mail, FileText, SquareX } from "lucide-react";
 const getRandomElement = (arr) =>
   arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : "Unknown";
 
-function BriefGenerator({ onClose }) {
+function BriefGenerator({ onClose, isSoundOn }) {
   const [brief, setBrief] = useState(null);
   const [viewMode, setViewMode] = useState("email");
   const [copied, setCopied] = useState(false);
@@ -47,6 +47,11 @@ function BriefGenerator({ onClose }) {
   }, []);
 
   const playCloseSound = () => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
+    }
     if (audioContextRef.current && closeSoundRef.current) {
       const src = audioContextRef.current.createBufferSource();
       src.buffer = closeSoundRef.current;
@@ -56,6 +61,11 @@ function BriefGenerator({ onClose }) {
   };
 
   const playMouseClickSound = () => {
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
+    }
     if (audioContextRef.current && clickSoundRef.current) {
       const src = audioContextRef.current.createBufferSource();
       src.buffer = clickSoundRef.current;
@@ -70,25 +80,19 @@ function BriefGenerator({ onClose }) {
     )
       .then((res) => {
         if (!res.ok) {
-          // Asynchronously read the response text for more detailed error logging
-          return res.text().then(text => {
-            throw new Error(`Network response was not ok. Status: ${res.status}, Body: ${text}`);
+          return res.text().then((text) => {
+            throw new Error(
+              `Network response was not ok. Status: ${res.status}, Body: ${text}`
+            );
           });
         }
         return res.json();
       })
       .then((json) => {
         const data = json.briefGenerator || json.sheet1 || [];
-        if (!Array.isArray(data)) { // Ensure data is an array before checking length
+        if (!Array.isArray(data)) {
           console.error("Fetched data is not an array:", data);
           throw new Error("Brief data is not in the expected array format.");
-        }
-        if (data.length === 0) {
-           // It's possible the sheet is empty but the API call was successful.
-           // This might not be an "error" state but an "empty data" state.
-           // For now, we'll treat it as potentially unexpected if lists remain empty.
-          console.warn("Fetched brief data array is empty. UI lists might be empty.");
-          // No throw, allow processing of empty data, which results in "Unknown" for brief parts.
         }
 
         const unique = (arr) => [
@@ -101,12 +105,13 @@ function BriefGenerator({ onClose }) {
         setEnvironments(unique(data.map((item) => item.environments)));
         setColorSchemes(unique(data.map((item) => item.colorSchemes)));
         setTypes(unique(data.map((item) => item.types)));
-        // Clear any previous error if fetch is successful
         setError(null);
       })
       .catch((err) => {
         console.error("Failed to fetch or process brief data:", err);
-        setError(`Failed to load brief data: ${err.message}. Please try again later.`);
+        setError(
+          `Failed to load brief data: ${err.message}. Please try again later.`
+        );
       });
   }, []);
 

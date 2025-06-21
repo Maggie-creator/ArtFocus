@@ -3,7 +3,6 @@ import {
   ClipboardList,
   Loader,
   CheckCircle2,
-  MoreHorizontal,
   Flag,
   SquareX,
 } from "lucide-react";
@@ -16,10 +15,9 @@ const statusOptions = [
   "Delayed",
   "Completed",
 ];
-
 const priorityOptions = ["Low", "Medium", "High"];
 
-const KanbanBoard = ({ onClose }) => {
+const KanbanBoard = ({ onClose, isSoundOn }) => {
   const [tasks, setTasks] = useState({
     todo: [],
     inProgress: [],
@@ -46,12 +44,12 @@ const KanbanBoard = ({ onClose }) => {
     const storedTasks = localStorage.getItem("kanbanTasks");
     if (storedTasks) {
       let parsedTasks = JSON.parse(storedTasks);
-      if (parsedTasks && typeof parsedTasks === 'object') {
+      if (parsedTasks && typeof parsedTasks === "object") {
         let idsAdded = false;
-        Object.keys(parsedTasks).forEach(columnKey => {
+        Object.keys(parsedTasks).forEach((columnKey) => {
           if (Array.isArray(parsedTasks[columnKey])) {
-            parsedTasks[columnKey].forEach(task => {
-              if (!task.hasOwnProperty('id') || task.id === undefined) {
+            parsedTasks[columnKey].forEach((task) => {
+              if (!task.hasOwnProperty("id") || task.id === undefined) {
                 task.id = uuidv4();
                 idsAdded = true;
               }
@@ -72,14 +70,20 @@ const KanbanBoard = ({ onClose }) => {
 
   const addOrUpdateTask = () => {
     if (!newTaskData.title.trim()) return;
-    if (clickSoundRef.current) clickSoundRef.current.play();
+    if (isSoundOn) new Audio("/sounds/click.mp3").play();
 
     setTasks((prev) => {
       const updatedColumn = [...prev[selectedColumn]];
       if (isEditing) {
-        const taskIndexToUpdate = updatedColumn.findIndex(task => task.id === editingTaskId);
+        const taskIndexToUpdate = updatedColumn.findIndex(
+          (task) => task.id === editingTaskId
+        );
         if (taskIndexToUpdate !== -1) {
-          updatedColumn[taskIndexToUpdate] = { ...updatedColumn[taskIndexToUpdate], ...newTaskData, id: editingTaskId }; // Ensure ID is preserved
+          updatedColumn[taskIndexToUpdate] = {
+            ...updatedColumn[taskIndexToUpdate],
+            ...newTaskData,
+            id: editingTaskId,
+          };
         }
       } else {
         const newTask = { ...newTaskData, id: uuidv4() };
@@ -105,6 +109,7 @@ const KanbanBoard = ({ onClose }) => {
   };
 
   const deleteTask = (columnKey, taskId) => {
+    if (isSoundOn) new Audio("/sounds/click.mp3").play();
     setTasks((prev) => ({
       ...prev,
       [columnKey]: prev[columnKey].filter((task) => task.id !== taskId),
@@ -123,7 +128,9 @@ const KanbanBoard = ({ onClose }) => {
     if (!task || fromColumnKey === to) return;
 
     setTasks((prev) => {
-      const updatedFromTasks = prev[fromColumnKey].filter(t => t.id !== task.id);
+      const updatedFromTasks = prev[fromColumnKey].filter(
+        (t) => t.id !== task.id
+      );
       const taskToAdd = { ...task };
 
       return {
@@ -132,6 +139,8 @@ const KanbanBoard = ({ onClose }) => {
         [to]: [...prev[to], taskToAdd],
       };
     });
+
+    if (isSoundOn) new Audio("/sounds/click.mp3").play();
   };
 
   const allowDrop = (e) => e.preventDefault();
@@ -143,12 +152,11 @@ const KanbanBoard = ({ onClose }) => {
     setEditingTaskId(taskToEdit.id);
     setEditingColumn(columnKey);
     setShowModal(true);
+    if (isSoundOn) new Audio("/sounds/click.mp3").play();
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
-      closeSoundRef.current.play();
-    }
+    if (closeSoundRef.current) closeSoundRef.current.play();
     setTimeout(() => {
       onClose();
     }, 150);
@@ -158,17 +166,26 @@ const KanbanBoard = ({ onClose }) => {
     {
       key: "todo",
       label: "To Do",
-      icon: <ClipboardList className="w-5 h-5 mr-2 text-blue-700" />,
+      icon: <ClipboardList className="w-7 h-7 mr-2 text-primary" />,
+      borderColor: "border-primary",
+      textColor: "text-primary",
+      buttonColor: "btn-primary",
     },
     {
       key: "inProgress",
       label: "In Progress",
-      icon: <Loader className="w-5 h-5 mr-2 text-yellow-600" />,
+      icon: <Loader className="w-7 h-7 mr-2 text-secondary" />,
+      borderColor: "border-secondary",
+      textColor: "text-secondary",
+      buttonColor: "btn-secondary",
     },
     {
       key: "done",
       label: "Done",
-      icon: <CheckCircle2 className="w-5 h-5 mr-2 text-green-700" />,
+      icon: <CheckCircle2 className="w-7 h-7 mr-2 text-success" />,
+      borderColor: "border-success",
+      textColor: "text-success",
+      buttonColor: "btn-success",
     },
   ];
 
@@ -201,86 +218,92 @@ const KanbanBoard = ({ onClose }) => {
       </h1>
 
       <div className="flex flex-wrap gap-4 w-full my-4">
-        {columns.map(({ key, label, icon }) => (
-          <div
-            key={key}
-            className="card bg-base-300 text-neutral-content rounded-box p-5 shadow-lg min-h-[300px] flex-1 min-w-[238px]"
-            onDrop={(e) => onDrop(e, key)}
-            onDragOver={allowDrop}
-          >
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2 text-white">
-                {icon} {label}
-              </div>
-              <button
-                className="btn btn-sm btn-primary btn-outline"
-                onClick={() => {
-                  setSelectedColumn(key);
-                  setShowModal(true);
-                }}
-              >
-                +
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {tasks[key].map((task) => (
+        {columns.map(
+          ({ key, label, icon, borderColor, textColor, buttonColor }) => (
+            <div
+              key={key}
+              className={`card bg-base-300 text-neutral-content rounded-box border ${borderColor} p-5 shadow-lg min-h-[300px] flex-1 min-w-[238px]`}
+              onDrop={(e) => onDrop(e, key)}
+              onDragOver={allowDrop}
+            >
+              <div className="flex justify-between items-center mb-4">
                 <div
-                  key={task.id}
-                  className="relative bg-neutral text-white rounded p-2 shadow flex flex-col gap-2 cursor-pointer"
-                  draggable
-                  onDragStart={(e) => onDragStart(e, task, key)}
-                  onClick={() => openEditModal(task, key)}
+                  className={`flex items-center gap-2 text-xl font-bold ${textColor}`}
                 >
-                  <div className="p-2 flex justify-between items-start">
-                    <div className="flex gap-2">
-                      {task.status && (
-                        <div className="badge badge-outline badge-info">
-                          {task.status}
-                        </div>
-                      )}
-                      {task.priority && (
-                        <div className="badge badge-outline badge-warning">
-                          {task.priority}
-                        </div>
-                      )}
-                    </div>
-                    <div
-                      className="tooltip tooltip-left tooltip-secondary"
-                      data-tip="Delete task"
-                    >
-                      <button
-                        className="text-red-500 hover:text-red-400 rounded-full w-6 h-6 flex items-center justify-center"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteTask(key, task.id);
-                        }}
-                      >
-                        <SquareX className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="pt-2 pl-2 font-bold text-base truncate max-w-full">
-                    {task.title.length > 100
-                      ? task.title.slice(0, 100) + "..."
-                      : task.title}
-                  </div>
-                  <div className="px-2 text-sm text-gray-100 truncate max-w-full">
-                    {task.description.length > 100
-                      ? task.description.slice(0, 100) + "..."
-                      : task.description}
-                  </div>
-                  <div className="divider"></div>
-                  {task.deadline && (
-                    <div className="pb-2 pl-2 font-bold text-xs text-gray-100">
-                      Deadline: {task.deadline}
-                    </div>
-                  )}
+                  {icon}
+                  {label}
                 </div>
-              ))}
+                <button
+                  className={`btn btn-md ${buttonColor} btn-outline`}
+                  onClick={() => {
+                    setSelectedColumn(key);
+                    setShowModal(true);
+                    if (isSoundOn) new Audio("/sounds/click.mp3").play();
+                  }}
+                >
+                  +
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {tasks[key].map((task) => (
+                  <div
+                    key={task.id}
+                    className="relative bg-neutral text-white rounded p-2 shadow flex flex-col gap-2 cursor-pointer"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, task, key)}
+                    onClick={() => openEditModal(task, key)}
+                  >
+                    <div className="p-2 flex justify-between items-start">
+                      <div className="flex gap-2">
+                        {task.status && (
+                          <div className="badge badge-outline badge-info">
+                            {task.status}
+                          </div>
+                        )}
+                        {task.priority && (
+                          <div className="badge badge-outline badge-warning">
+                            {task.priority}
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        className="tooltip tooltip-left tooltip-secondary"
+                        data-tip="Delete task"
+                      >
+                        <button
+                          className="text-red-500 hover:text-red-400 rounded-full w-6 h-6 flex items-center justify-center"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteTask(key, task.id);
+                          }}
+                        >
+                          <SquareX className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="pt-2 pl-2 font-bold text-base truncate max-w-full">
+                      {task.title.length > 100
+                        ? task.title.slice(0, 100) + "..."
+                        : task.title}
+                    </div>
+                    <div className="px-2 text-sm text-gray-100 truncate max-w-full">
+                      {task.description.length > 100
+                        ? task.description.slice(0, 100) + "..."
+                        : task.description}
+                    </div>
+                    <div className="divider"></div>
+                    {task.deadline && (
+                      <div className="pb-2 pl-2 font-bold text-xs text-gray-100">
+                        Deadline: {task.deadline}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
 
       {showModal && (
@@ -327,7 +350,10 @@ const KanbanBoard = ({ onClose }) => {
                   className="select select-bordered border-primary w-full"
                   value={newTaskData.priority}
                   onChange={(e) =>
-                    setNewTaskData({ ...newTaskData, priority: e.target.value })
+                    setNewTaskData({
+                      ...newTaskData,
+                      priority: e.target.value,
+                    })
                   }
                 >
                   <option value="">Select priority</option>
@@ -346,7 +372,10 @@ const KanbanBoard = ({ onClose }) => {
                   className="select select-bordered border-primary w-full"
                   value={newTaskData.status}
                   onChange={(e) =>
-                    setNewTaskData({ ...newTaskData, status: e.target.value })
+                    setNewTaskData({
+                      ...newTaskData,
+                      status: e.target.value,
+                    })
                   }
                 >
                   <option value="">Select status</option>
@@ -362,7 +391,7 @@ const KanbanBoard = ({ onClose }) => {
               <button
                 className="btn btn-sm btn-outline"
                 onClick={() => {
-                  if (clickSoundRef.current) clickSoundRef.current.play();
+                  if (isSoundOn) new Audio("/sounds/click.mp3").play();
                   setShowModal(false);
                 }}
               >

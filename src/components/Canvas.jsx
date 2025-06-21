@@ -63,8 +63,8 @@ const Canvas = ({ onClose, isSoundOn }) => {
 
   return (
     <div
-      className={`relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-full max-w-2xl
-        ${isClosing ? "opacity-0" : "opacity-100"}`} // Changed w-500 to w-full max-w-2xl
+      className={`relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-500
+        ${isClosing ? "opacity-0" : "opacity-100"}`} // Reverted to w-500
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
     >
       {/* Close button */}
@@ -103,7 +103,7 @@ const Canvas = ({ onClose, isSoundOn }) => {
       {/* Iframe preview */}
       <div
         className="w-full rounded overflow-hidden border border-base-300 my-4"
-        style={{ height: "60vh" }} // Made height responsive
+        style={{ height: "700px" }} // Reverted to 700px
       >
         <iframe
           src={softwareMap[selectedTool]}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player/youtube";
 import { SquareX } from "lucide-react";
 
@@ -6,7 +6,27 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isClosing, setIsClosing] = useState(false);
   const [isValidYouTubeUrl, setIsValidYouTubeUrl] = useState(true);
+  const [playerDimensions, setPlayerDimensions] = useState({ width: 0, height: 0 });
+
   const closeClickAudioRef = useRef(null);
+  const containerRef = useRef(null);
+
+  // Resize observer to adjust video size dynamically
+  useEffect(() => {
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        const width = entry.contentRect.width;
+        const height = (width * 9) / 16; // Maintain 16:9 aspect ratio
+        setPlayerDimensions({ width, height });
+      }
+    });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleUrlChange = (event) => {
     const newUrl = event.target.value;
@@ -22,7 +42,7 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
     setVideoUrl(newUrl);
 
     if (newUrl.trim() === "") {
-      setIsValidYouTubeUrl(true); // Reset validation if input is empty
+      setIsValidYouTubeUrl(true);
     } else {
       const youtubeRegex =
         /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
@@ -31,8 +51,6 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
   };
 
   const handleClose = () => {
-    // Removed the generic click.mp3 sound from here to avoid double sound.
-    // The closeClickAudioRef (notebook-close-83836.mp3) is more specific.
     if (isSoundOn && closeClickAudioRef.current) {
       closeClickAudioRef.current.currentTime = 0;
       closeClickAudioRef.current
@@ -43,7 +61,7 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
     }
 
     setIsClosing(true);
-    setTimeout(onClose, 150); // matches transition duration
+    setTimeout(onClose, 150);
   };
 
   return (
@@ -51,8 +69,8 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
       className={`card card-border bg-base-100 w-96 shadow-xl shadow-neutral-950/50 text-base-content p-4 text-center transition-opacity duration-150 ${
         isClosing ? "opacity-0" : "opacity-100"
       }`}
+      ref={containerRef}
     >
-      {/* Audio for close */}
       <audio ref={closeClickAudioRef} src="/sounds/notebook-close-83836.mp3" />
 
       {/* Close Icon */}
@@ -72,7 +90,7 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
         YouTube
       </h1>
 
-      {/* Video URL input */}
+      {/* Video URL Input */}
       <label htmlFor="youtube-url-input" className="sr-only">YouTube Video URL</label>
       <input
         type="text"
@@ -80,7 +98,7 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
         value={videoUrl}
         onChange={handleUrlChange}
         placeholder="Enter YouTube video URL"
-        className="input input-bordered border-primary w-full"
+        className="input input-bordered border-primary w-full p-4"
         onFocus={() => {
           if (isSoundOn) {
             new Audio("/sounds/click.mp3")
@@ -92,22 +110,24 @@ const YouTubePlayer = ({ onClose, isSoundOn }) => {
         }}
       />
 
-      {/* Validation Message */}
+      {/* Validation */}
       {videoUrl && !isValidYouTubeUrl && (
         <p role="alert" className="text-red-500 text-sm mt-2">
           Please enter a valid YouTube URL.
         </p>
       )}
 
-      {/* React Player */}
+      {/* Spacer */}
+      {videoUrl && isValidYouTubeUrl && <div className="my-4" />}
+
+      {/* ReactPlayer */}
       {videoUrl && isValidYouTubeUrl && (
-        <div className="relative aspect-w-16 aspect-h-9 overflow-hidden rounded-lg">
+        <div className="rounded-lg overflow-hidden" style={{ width: "100%", height: playerDimensions.height }}>
           <ReactPlayer
             url={videoUrl}
             controls={true}
             width="100%"
             height="100%"
-            style={{ borderRadius: "12px", overflow: "hidden" }}
             config={{
               youtube: {
                 playerVars: { modestbranding: 1 },

@@ -204,7 +204,7 @@ const Navbar = ({
 
           {/* 🔊 Sound Toggle Button */}
           <div
-            className="tooltip tooltip-bottom tooltip-primary z-[9999]"
+            className="tooltip tooltip-bottom tooltip-secondary z-[9999]"
             data-tip={isSoundOn ? "Sound On" : "Sound Off"}
           >
             <button

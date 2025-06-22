@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { SquareX } from "lucide-react";
 
-const Canvas = ({ onClose }) => {
+const Canvas = ({ onClose, isSoundOn }) => {
   const SUMO_PAINT_URL = "https://paint.sumo.app/";
   const SUMO_3D_URL = "https://3d.sumo.app/?lang=en";
 
-  const clickSoundRef = useRef(null);
+  // const clickSoundRef = useRef(null); // Removed as it's unused
   const closeSoundRef = useRef(null);
 
   const [isClosing, setIsClosing] = useState(false);
@@ -18,14 +18,19 @@ const Canvas = ({ onClose }) => {
   };
 
   useEffect(() => {
-    clickSoundRef.current = new Audio("/sounds/mouse-click-sound.mp3");
+    // clickSoundRef.current = new Audio("/sounds/mouse-click-sound.mp3"); // These are now handled by the isSoundOn check with new Audio()
     closeSoundRef.current = new Audio("/sounds/notebook-close-83836.mp3");
   }, []);
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
+    // Removed the generic click.mp3 sound from here.
+    if (isSoundOn && closeSoundRef.current) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing Canvas close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Canvas close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -35,18 +40,22 @@ const Canvas = ({ onClose }) => {
   };
 
   const handleOpenFullscreen = () => {
-    if (clickSoundRef.current) {
-      clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(error => console.error("Error playing Canvas click sound:", error));
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
     }
+    // Removed redundant clickSoundRef.current logic here
     window.open(softwareMap[selectedTool], "_blank");
   };
 
   const handleToolChange = (e) => {
-    if (clickSoundRef.current) {
-      clickSoundRef.current.currentTime = 0;
-      clickSoundRef.current.play().catch(error => console.error("Error playing Canvas click sound:", error));
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) => console.error("click.mp3 error:", err));
     }
+    // Removed redundant clickSoundRef.current logic here
     setSelectedTool(e.target.value);
   };
 
@@ -55,7 +64,7 @@ const Canvas = ({ onClose }) => {
   return (
     <div
       className={`relative flex flex-auto flex-col items-center text-center p-4 bg-base-100 border border-base-100 shadow-xl shadow-neutral-950/50 rounded-box mx-1 w-500
-        ${isClosing ? "opacity-0" : "opacity-100"}`}
+        ${isClosing ? "opacity-0" : "opacity-100"}`} // Reverted to w-500
       style={{ willChange: "opacity", transition: "opacity 150ms ease" }}
     >
       {/* Close button */}
@@ -67,6 +76,7 @@ const Canvas = ({ onClose }) => {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Canvas tool"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -79,8 +89,10 @@ const Canvas = ({ onClose }) => {
       </h1>
 
       {/* Tool selection dropdown */}
+      <label htmlFor="canvas-tool-select" className="sr-only">Select Canvas Tool</label>
       <select
-        className="select select-secondary w-full max-w-xs mb-4" // Added mb-4 for spacing
+        id="canvas-tool-select"
+        className="select select-secondary w-full max-w-xs mb-4"
         value={selectedTool}
         onChange={handleToolChange}
       >
@@ -91,7 +103,7 @@ const Canvas = ({ onClose }) => {
       {/* Iframe preview */}
       <div
         className="w-full rounded overflow-hidden border border-base-300 my-4"
-        style={{ height: "700px" }}
+        style={{ height: "700px" }} // Reverted to 700px
       >
         <iframe
           src={softwareMap[selectedTool]}

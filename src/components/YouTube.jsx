@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import ReactPlayer from "react-player/youtube";
 import { SquareX } from "lucide-react";
 
-const YouTubePlayer = ({ onClose }) => {
+const YouTubePlayer = ({ onClose, isSoundOn }) => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isClosing, setIsClosing] = useState(false);
   const [isValidYouTubeUrl, setIsValidYouTubeUrl] = useState(true);
@@ -10,21 +10,38 @@ const YouTubePlayer = ({ onClose }) => {
 
   const handleUrlChange = (event) => {
     const newUrl = event.target.value;
+
+    if (isSoundOn) {
+      new Audio("/sounds/click.mp3")
+        .play()
+        .catch((err) =>
+          console.error("Error playing click sound on URL input:", err)
+        );
+    }
+
     setVideoUrl(newUrl);
+
     if (newUrl.trim() === "") {
       setIsValidYouTubeUrl(true); // Reset validation if input is empty
     } else {
-      // Basic check for youtube.com or youtu.be links
-      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+      const youtubeRegex =
+        /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
       setIsValidYouTubeUrl(youtubeRegex.test(newUrl));
     }
   };
 
   const handleClose = () => {
-    if (closeClickAudioRef.current) {
+    // Removed the generic click.mp3 sound from here to avoid double sound.
+    // The closeClickAudioRef (notebook-close-83836.mp3) is more specific.
+    if (isSoundOn && closeClickAudioRef.current) {
       closeClickAudioRef.current.currentTime = 0;
-      closeClickAudioRef.current.play().catch(error => console.error("Error playing YouTube close sound:", error));
+      closeClickAudioRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing YouTube close sound:", error)
+        );
     }
+
     setIsClosing(true);
     setTimeout(onClose, 150); // matches transition duration
   };
@@ -44,6 +61,7 @@ const YouTubePlayer = ({ onClose }) => {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close YouTube player"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -55,17 +73,28 @@ const YouTubePlayer = ({ onClose }) => {
       </h1>
 
       {/* Video URL input */}
+      <label htmlFor="youtube-url-input" className="sr-only">YouTube Video URL</label>
       <input
         type="text"
+        id="youtube-url-input"
         value={videoUrl}
         onChange={handleUrlChange}
         placeholder="Enter YouTube video URL"
         className="input input-bordered border-primary w-full"
+        onFocus={() => {
+          if (isSoundOn) {
+            new Audio("/sounds/click.mp3")
+              .play()
+              .catch((err) =>
+                console.error("Error playing click sound on focus:", err)
+              );
+          }
+        }}
       />
 
       {/* Validation Message */}
       {videoUrl && !isValidYouTubeUrl && (
-        <p className="text-red-500 text-sm mt-2">
+        <p role="alert" className="text-red-500 text-sm mt-2">
           Please enter a valid YouTube URL.
         </p>
       )}

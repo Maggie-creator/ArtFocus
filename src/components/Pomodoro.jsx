@@ -1,9 +1,8 @@
-// components/Pomodoro.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw, SquareX } from "lucide-react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
-function Pomodoro({ onClose }) {
+function Pomodoro({ onClose, isSoundOn }) {
   const [isRunning, setIsRunning] = useState(false);
   const [workDuration, setWorkDuration] = useState(25);
   const [breakDuration, setBreakDuration] = useState(5);
@@ -29,7 +28,13 @@ function Pomodoro({ onClose }) {
         setSecondsLeft((prev) => {
           if (prev <= 1) {
             clearInterval(timerRef.current);
-            new Audio("/sounds/bell.mp3").play().catch(error => console.error("Error playing bell sound:", error));
+            if (isSoundOn) {
+              new Audio("/sounds/bell.mp3")
+                .play()
+                .catch((error) =>
+                  console.error("Error playing bell sound:", error)
+                );
+            }
             const nextSession = isWorkTime ? breakDuration : workDuration;
             setIsWorkTime(!isWorkTime);
             setSecondsLeft(nextSession * 60);
@@ -41,26 +46,36 @@ function Pomodoro({ onClose }) {
       }, 1000);
     }
     return () => clearInterval(timerRef.current);
-  }, [isRunning, isWorkTime, breakDuration, workDuration]);
+  }, [isRunning, isWorkTime, breakDuration, workDuration, isSoundOn]);
 
   useEffect(() => {
     if (isRunning && tickingSoundRef.current) {
       tickingSoundRef.current.loop = true;
-      tickingSoundRef.current.play().catch(error => console.error("Error playing ticking sound:", error));
+      if (isSoundOn) {
+        tickingSoundRef.current
+          .play()
+          .catch((error) =>
+            console.error("Error playing ticking sound:", error)
+          );
+      }
     } else if (tickingSoundRef.current) {
       tickingSoundRef.current.pause();
       tickingSoundRef.current.currentTime = 0;
     }
-  }, [isRunning]);
+  }, [isRunning, isSoundOn]);
 
   useEffect(() => {
     if (prevIsWorkTimeRef.current !== isWorkTime && !isWorkTime) {
-      if (serviceBellRef.current) {
-        serviceBellRef.current.play().catch(error => console.error("Error playing service bell sound:", error));
+      if (serviceBellRef.current && isSoundOn) {
+        serviceBellRef.current
+          .play()
+          .catch((error) =>
+            console.error("Error playing service bell sound:", error)
+          );
       }
     }
     prevIsWorkTimeRef.current = isWorkTime;
-  }, [isWorkTime]);
+  }, [isWorkTime, isSoundOn]);
 
   const formatTime = (secs) => {
     const mins = Math.floor(secs / 60);
@@ -71,9 +86,13 @@ function Pomodoro({ onClose }) {
   };
 
   const handleClose = () => {
-    if (closeSoundRef.current) {
+    if (closeSoundRef.current && isSoundOn) {
       closeSoundRef.current.currentTime = 0;
-      closeSoundRef.current.play().catch(error => console.error("Error playing Pomodoro close sound:", error));
+      closeSoundRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing Pomodoro close sound:", error)
+        );
     }
     setIsClosing(true);
     setTimeout(() => {
@@ -83,17 +102,25 @@ function Pomodoro({ onClose }) {
   };
 
   const handlePlayPause = () => {
-    if (mouseClickRef.current) {
+    if (mouseClickRef.current && isSoundOn) {
       mouseClickRef.current.currentTime = 0;
-      mouseClickRef.current.play().catch(error => console.error("Error playing mouse click sound:", error));
+      mouseClickRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing mouse click sound:", error)
+        );
     }
     setIsRunning(!isRunning);
   };
 
   const handleReset = () => {
-    if (mouseClickRef.current) {
+    if (mouseClickRef.current && isSoundOn) {
       mouseClickRef.current.currentTime = 0;
-      mouseClickRef.current.play().catch(error => console.error("Error playing mouse click sound:", error));
+      mouseClickRef.current
+        .play()
+        .catch((error) =>
+          console.error("Error playing mouse click sound:", error)
+        );
     }
     setIsRunning(false);
     setSecondsLeft(workDuration * 60);
@@ -114,6 +141,7 @@ function Pomodoro({ onClose }) {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Pomodoro timer"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -157,6 +185,7 @@ function Pomodoro({ onClose }) {
           loop
           autoplay
           style={{ width: "100%", maxHeight: "200px", margin: "0 auto" }}
+          aria-hidden="true"
         />
       </div>
 
@@ -167,14 +196,22 @@ function Pomodoro({ onClose }) {
 
       {/* Controls */}
       <div className="flex justify-center gap-4 mb-4">
-        <button onClick={handlePlayPause} className="btn btn-primary">
+        <button
+          onClick={handlePlayPause}
+          className="btn btn-primary"
+          aria-label={isRunning ? "Pause timer" : "Play timer"}
+        >
           {isRunning ? (
             <Pause className="w-5 h-5" />
           ) : (
             <Play className="w-5 h-5" />
           )}
         </button>
-        <button onClick={handleReset} className="btn btn-secondary">
+        <button
+          onClick={handleReset}
+          className="btn btn-secondary"
+          aria-label="Reset timer"
+        >
           <RotateCcw className="w-5 h-5" />
         </button>
       </div>
@@ -182,24 +219,26 @@ function Pomodoro({ onClose }) {
       {/* Duration Settings */}
       <div className="mt-4 space-y-2">
         <div>
-          <label className="label">
+          <label htmlFor="work-duration-input" className="label">
             <span className="label-text mb-2">Work Duration (minutes)</span>
           </label>
           <input
             type="number"
+            id="work-duration-input"
             className="input input-bordered border-primary w-full"
             value={workDuration}
             onChange={(e) => setWorkDuration(Number(e.target.value))}
           />
         </div>
         <div>
-          <label className="label">
+          <label htmlFor="break-duration-input" className="label">
             <span className="label-text mb-2 mt-2">
               Break Duration (minutes)
             </span>
           </label>
           <input
             type="number"
+            id="break-duration-input"
             className="input input-bordered border-primary w-full"
             value={breakDuration}
             onChange={(e) => setBreakDuration(Number(e.target.value))}

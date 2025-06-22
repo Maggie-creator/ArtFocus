@@ -16,10 +16,10 @@ import Footer from "./components/Footer";
 const backgrounds = {
   background1: {
     image:
-      "https://cdna.artstation.com/p/assets/images/images/087/475/468/large/-0429.jpg?1745894356",
-    artist: "秋刀鱼",
-    link: "https://www.artstation.com/artwork/OvRX2v",
-    name: "Sketch of the Day",
+      "https://cdnb.artstation.com/p/assets/images/images/051/001/063/large/tyler-smith-aspenwoodsrender01.jpg?1656220912",
+    artist: "Tyler Smith",
+    link: "https://www.artstation.com/artwork/r9YPd5",
+    name: "Golden Forest",
   },
   lost_land_fairy_land: {
     image:
@@ -28,19 +28,19 @@ const backgrounds = {
     link: "https://www.artstation.com/artwork/L4bEVr",
     name: "Lost Land, Fairy Land",
   },
-  lost_in_between: {
+  different_worlds: {
     image:
-      "https://cdnb.artstation.com/p/assets/images/images/037/521/205/large/alena-aenami-lost-1k.jpg?1620609020",
-    artist: "Alena Aenami",
-    link: "https://www.artstation.com/artwork/J91ZxD",
-    name: "Lost in Between",
+      "https://cdna.artstation.com/p/assets/images/images/040/035/348/large/hue-teo-environment-with-giant.jpg?1627654369",
+    artist: "Hue Teo",
+    link: "https://www.artstation.com/artwork/rA6DB5",
+    name: "Different Worlds",
   },
-  A_Floating_City: {
+  Good_Dog: {
     image:
-      "https://cdnb.artstation.com/p/assets/images/images/051/015/853/large/elias-stern-a-floating-city.jpg?1656261682",
-    artist: "Elias Stern",
-    link: "https://www.artstation.com/artwork/b5ZdVm",
-    name: "A Floating City",
+      "https://cdna.artstation.com/p/assets/images/images/018/781/162/large/shuang-hao-6-11-2019.jpg?1560709816",
+    artist: "Fran Hao Shuang",
+    link: "https://www.artstation.com/artwork/k4BaVl",
+    name: "Good Dog",
   },
   Quiet_Day: {
     image:
@@ -51,32 +51,48 @@ const backgrounds = {
   },
 };
 
+const defaultVisibility = {
+  pomodoro: true,
+  worldClock: true,
+  timeZoneConverter: true,
+  canvas: true,
+  taskTracker: true,
+  kanban: true,
+  quote: true,
+  briefGenerator: true,
+  referenceImages: true,
+  youtube: true,
+  stickyNotes: true,
+};
+
 const App = () => {
   const [backgroundKey, setBackgroundKey] = useState("background1");
   const [navbarHeight, setNavbarHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [bgLoaded, setBgLoaded] = useState(true);
+  const [isSoundOn, setIsSoundOn] = useState(true); // 🔊 Sound toggle state
+
+  const toggleSound = () => setIsSoundOn((prev) => !prev); // 🔁 Toggle handler
 
   const navbarRef = useRef(null);
   const footerRef = useRef(null);
 
-  const [componentVisibility, setComponentVisibility] = useState({
-    pomodoro: true,
-    worldClock: true,
-    timeZoneConverter: true,
-    canvas: true,
-    taskTracker: true,
-    kanban: true,
-    quote: true,
-    briefGenerator: true,
-    referenceImages: true,
-    youtube: true,
-    stickyNotes: true,
+  const [componentVisibility, setComponentVisibility] = useState(() => {
+    const saved = localStorage.getItem("componentVisibility");
+    return saved ? JSON.parse(saved) : defaultVisibility;
   });
 
+  useEffect(() => {
+    localStorage.setItem(
+      "componentVisibility",
+      JSON.stringify(componentVisibility)
+    );
+  }, [componentVisibility]);
+
   const handleToggleComponentVisibility = (componentName) => {
-    setComponentVisibility(prev => ({
+    setComponentVisibility((prev) => ({
       ...prev,
-      [componentName]: !prev[componentName]
+      [componentName]: !prev[componentName],
     }));
   };
 
@@ -97,6 +113,7 @@ const App = () => {
   }, []);
 
   const handleBackgroundChange = (key) => {
+    setBgLoaded(false);
     setBackgroundKey(key);
     localStorage.setItem("selectedBackground", key);
   };
@@ -105,77 +122,133 @@ const App = () => {
 
   return (
     <div className="relative min-h-screen w-full overflow-x-hidden">
-      {/* Background */}
-      <div
-        className="fixed inset-0 -z-10 bg-cover bg-center bg-fixed"
-        style={{ backgroundImage: `url(${currentBackground.image})` }}
+      {/* Preload background */}
+      <img
+        src={currentBackground.image}
+        alt="background preload"
+        style={{ display: "none" }}
+        onLoad={() => setBgLoaded(true)}
+        onError={() => setBgLoaded(false)}
       />
 
-      {/* Sticky Navbar */}
+      {/* Background Layers */}
+      <div
+        className="fixed inset-0 -z-10 bg-cover bg-center bg-fixed transition-opacity duration-700"
+        style={{
+          backgroundImage: bgLoaded
+            ? `url(${currentBackground.image})`
+            : "none",
+          backgroundColor: !bgLoaded ? "#1f1f1f" : undefined,
+        }}
+      />
+      <div className="fixed inset-0 -z-9 bg-black bg-opacity-35 pointer-events-none" />
+
+      {/* Navbar */}
       <div ref={navbarRef} className="fixed top-0 left-0 w-full z-[9999]">
         <Navbar
           onToggleComponent={handleToggleComponentVisibility}
           onBackgroundChange={handleBackgroundChange}
           backgrounds={backgrounds}
+          componentVisibility={componentVisibility}
+          isSoundOn={isSoundOn} // 🔊
+          toggleSound={toggleSound} // 🔁
         />
       </div>
 
-      {/* Foreground Content */}
-      <div
+      {/* Main Content */}
+      <main
         className="relative z-[9998] w-full overflow-x-hidden"
         style={{ paddingTop: navbarHeight, paddingBottom: footerHeight }}
       >
-        {/* Group 1 */}
         <div className="flex flex-wrap justify-center gap-4 pt-10 pb-4">
-          {componentVisibility.pomodoro && <Pomodoro onClose={() => handleToggleComponentVisibility('pomodoro')} />}
+          {componentVisibility.pomodoro && (
+            <Pomodoro
+              onClose={() => handleToggleComponentVisibility("pomodoro")}
+              isSoundOn={isSoundOn} // 🔊 pass to Pomodoro
+            />
+          )}
           {componentVisibility.taskTracker && (
-            <TaskTracker onClose={() => handleToggleComponentVisibility('taskTracker')} />
+            <TaskTracker
+              onClose={() => handleToggleComponentVisibility("taskTracker")}
+              isSoundOn={isSoundOn}
+            />
           )}
           {componentVisibility.stickyNotes && (
-            <StickyNotes onClose={() => handleToggleComponentVisibility('stickyNotes')} />
+            <StickyNotes
+              onClose={() => handleToggleComponentVisibility("stickyNotes")}
+              isSoundOn={isSoundOn}
+            />
           )}
         </div>
 
-        {/* Kanban */}
         <div className="flex justify-center p-4">
           <div className="lg:basis-[1188px] max-w-full w-full">
-            {componentVisibility.kanban && <KanbanBoard onClose={() => handleToggleComponentVisibility('kanban')} />}
+            {componentVisibility.kanban && (
+              <KanbanBoard
+                onClose={() => handleToggleComponentVisibility("kanban")}
+                isSoundOn={isSoundOn}
+              />
+            )}
           </div>
         </div>
 
-        {/* Group 2 */}
         <div className="flex flex-wrap justify-center gap-4 p-4">
           {componentVisibility.worldClock && (
-            <WorldClock onClose={() => handleToggleComponentVisibility('worldClock')} />
+            <WorldClock
+              onClose={() => handleToggleComponentVisibility("worldClock")}
+              isSoundOn={isSoundOn}
+            />
           )}
           {componentVisibility.timeZoneConverter && (
             <TimeZoneConverter
-              onClose={() => handleToggleComponentVisibility('timeZoneConverter')}
+              onClose={() =>
+                handleToggleComponentVisibility("timeZoneConverter")
+              }
+              isSoundOn={isSoundOn}
             />
           )}
-          {componentVisibility.quote && <Quote onClose={() => handleToggleComponentVisibility('quote')} />}
+          {componentVisibility.quote && (
+            <Quote
+              onClose={() => handleToggleComponentVisibility("quote")}
+              isSoundOn={isSoundOn}
+            />
+          )}
         </div>
 
-        {/* Group 3 */}
         <div className="flex flex-wrap justify-center gap-4 p-4">
           {componentVisibility.referenceImages && (
-            <ReferenceImages onClose={() => handleToggleComponentVisibility('referenceImages')} />
+            <ReferenceImages
+              onClose={() => handleToggleComponentVisibility("referenceImages")}
+              isSoundOn={isSoundOn}
+            />
           )}
           {componentVisibility.briefGenerator && (
-            <BriefGenerator onClose={() => handleToggleComponentVisibility('briefGenerator')} />
+            <BriefGenerator
+              onClose={() => handleToggleComponentVisibility("briefGenerator")}
+              isSoundOn={isSoundOn}
+            />
           )}
-          {componentVisibility.youtube && <YouTube onClose={() => handleToggleComponentVisibility('youtube')} />}
+          {componentVisibility.youtube && (
+            <YouTube
+              onClose={() => handleToggleComponentVisibility("youtube")}
+              isSoundOn={isSoundOn}
+            />
+          )}
         </div>
 
-        {/* Canvas */}
         <div className="flex justify-center p-4">
           <div className="lg:basis-[1188px] max-w-full w-full">
-            {componentVisibility.canvas && <Canvas onClose={() => handleToggleComponentVisibility('canvas')} />}
+            {componentVisibility.canvas && (
+              <Canvas
+                onClose={() => handleToggleComponentVisibility("canvas")}
+                isSoundOn={isSoundOn}
+              />
+            )}
           </div>
         </div>
-      </div>
+      </main>
 
-      {/* Sticky Footer */}
+      {/* Footer */}
       <div ref={footerRef} className="fixed bottom-0 left-0 w-full z-[9999]">
         <Footer
           artist={currentBackground.artist}

@@ -4,7 +4,7 @@ import { ClipboardCopy, Mail, FileText, SquareX } from "lucide-react";
 const getRandomElement = (arr) =>
   arr.length > 0 ? arr[Math.floor(Math.random() * arr.length)] : "Unknown";
 
-function BriefGenerator({ onClose }) {
+function BriefGenerator({ onClose, isSoundOn }) {
   const [brief, setBrief] = useState(null);
   const [viewMode, setViewMode] = useState("email");
   const [copied, setCopied] = useState(false);
@@ -22,6 +22,7 @@ function BriefGenerator({ onClose }) {
   const audioContextRef = useRef(null);
   const closeSoundRef = useRef(null);
   const clickSoundRef = useRef(null);
+  const briefContentRef = useRef(null); // For focusing generated brief
 
   useEffect(() => {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -47,20 +48,28 @@ function BriefGenerator({ onClose }) {
   }, []);
 
   const playCloseSound = () => {
-    if (audioContextRef.current && closeSoundRef.current) {
-      const src = audioContextRef.current.createBufferSource();
-      src.buffer = closeSoundRef.current;
-      src.connect(audioContextRef.current.destination);
-      src.start();
+    if (isSoundOn && audioContextRef.current && closeSoundRef.current) {
+      try {
+        const src = audioContextRef.current.createBufferSource();
+        src.buffer = closeSoundRef.current;
+        src.connect(audioContextRef.current.destination);
+        src.start();
+      } catch (err) {
+        console.error("Error playing close sound:", err);
+      }
     }
   };
 
   const playMouseClickSound = () => {
-    if (audioContextRef.current && clickSoundRef.current) {
-      const src = audioContextRef.current.createBufferSource();
-      src.buffer = clickSoundRef.current;
-      src.connect(audioContextRef.current.destination);
-      src.start();
+    if (isSoundOn && audioContextRef.current && clickSoundRef.current) {
+      try {
+        const src = audioContextRef.current.createBufferSource();
+        src.buffer = clickSoundRef.current;
+        src.connect(audioContextRef.current.destination);
+        src.start();
+      } catch (err) {
+        console.error("Error playing mouse click sound:", err);
+      }
     }
   };
 
@@ -70,25 +79,19 @@ function BriefGenerator({ onClose }) {
     )
       .then((res) => {
         if (!res.ok) {
-          // Asynchronously read the response text for more detailed error logging
-          return res.text().then(text => {
-            throw new Error(`Network response was not ok. Status: ${res.status}, Body: ${text}`);
+          return res.text().then((text) => {
+            throw new Error(
+              `Network response was not ok. Status: ${res.status}, Body: ${text}`
+            );
           });
         }
         return res.json();
       })
       .then((json) => {
         const data = json.briefGenerator || json.sheet1 || [];
-        if (!Array.isArray(data)) { // Ensure data is an array before checking length
+        if (!Array.isArray(data)) {
           console.error("Fetched data is not an array:", data);
           throw new Error("Brief data is not in the expected array format.");
-        }
-        if (data.length === 0) {
-           // It's possible the sheet is empty but the API call was successful.
-           // This might not be an "error" state but an "empty data" state.
-           // For now, we'll treat it as potentially unexpected if lists remain empty.
-          console.warn("Fetched brief data array is empty. UI lists might be empty.");
-          // No throw, allow processing of empty data, which results in "Unknown" for brief parts.
         }
 
         const unique = (arr) => [
@@ -101,12 +104,13 @@ function BriefGenerator({ onClose }) {
         setEnvironments(unique(data.map((item) => item.environments)));
         setColorSchemes(unique(data.map((item) => item.colorSchemes)));
         setTypes(unique(data.map((item) => item.types)));
-        // Clear any previous error if fetch is successful
         setError(null);
       })
       .catch((err) => {
         console.error("Failed to fetch or process brief data:", err);
-        setError(`Failed to load brief data: ${err.message}. Please try again later.`);
+        setError(
+          `Failed to load brief data: ${err.message}. Please try again later.`
+        );
       });
   }, []);
 
@@ -137,6 +141,9 @@ function BriefGenerator({ onClose }) {
     setBrief({ ...newBrief, header, body });
     setViewMode("email");
     setCopied(false);
+    setTimeout(() => {
+      briefContentRef.current?.focus();
+    }, 0);
   };
 
   const copyToClipboard = () => {
@@ -181,6 +188,7 @@ function BriefGenerator({ onClose }) {
           <button
             className="cursor-pointer text-red-500 hover:text-red-700"
             onClick={handleClose}
+            aria-label="Close Brief Generator"
           >
             <SquareX className="w-6 h-6" />
           </button>
@@ -192,7 +200,9 @@ function BriefGenerator({ onClose }) {
       </h1>
 
       {error && (
-        <p className="text-red-400 text-xs text-center mb-2">{error}</p>
+        <div role="alert" className="text-red-400 text-xs text-center mb-2">
+          <p>{error}</p>
+        </div>
       )}
       <button
         onClick={generateBrief}
@@ -201,6 +211,11 @@ function BriefGenerator({ onClose }) {
         Generate Brief
       </button>
 
+      {/* Visually hidden span for copy-to-clipboard announcements */}
+      <span aria-live="polite" className="sr-only">
+        {copied ? "Content copied to clipboard" : ""}
+      </span>
+
       {brief && (
         <div
           className={`rounded-md shadow overflow-hidden text-sm relative ${
@@ -208,6 +223,10 @@ function BriefGenerator({ onClose }) {
               ? "bg-white text-gray-800"
               : "bg-base-300 text-white"
           }`}
+          aria-live="polite"
+          aria-atomic="true"
+          ref={briefContentRef} // For focusing
+           tabIndex="-1" // Make it focusable
         >
           {viewMode === "email" ? (
             <>

@@ -37,10 +37,10 @@ const backgrounds = {
   },
   A_Floating_City: {
     image:
-      "https://cdnb.artstation.com/p/assets/images/images/051/015/853/large/elias-stern-a-floating-city.jpg?1656261682",
-    artist: "Elias Stern",
-    link: "https://www.artstation.com/artwork/b5ZdVm",
-    name: "A Floating City",
+      "https://cdna.artstation.com/p/assets/images/images/018/781/162/large/shuang-hao-6-11-2019.jpg?1560709816",
+    artist: "Fran Hao Shuang",
+    link: "https://www.artstation.com/artwork/k4BaVl",
+    name: "Good Dog",
   },
   Quiet_Day: {
     image:

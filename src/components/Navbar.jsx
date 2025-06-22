@@ -88,15 +88,17 @@ const Navbar = ({
     };
   }, [dropdownRef]);
 
-
   return (
-    <nav className="navbar px-4 sticky top-0 z-[9999] backdrop-blur-sm" aria-label="Main navigation">
+    <nav
+      className="navbar px-4 sticky top-0 z-[9999] backdrop-blur-sm"
+      aria-label="Main navigation"
+    >
       {/* Navbar Start */}
       <div className="navbar-start">
         <img
-          src="/icons/Artfocus_logo2.png"
+          src="/icons/ArtFocus_logo_writing.png"
           alt="ArtFocus Logo"
-          className="h-10 transition-transform hover:scale-105 hover:drop-shadow-lg"
+          className="h-12 transition-transform hover:scale-105 hover:drop-shadow-lg"
         />
       </div>
 
@@ -147,29 +149,52 @@ const Navbar = ({
                 role="menu"
               >
                 <li>
-                  <button onClick={() => { onBackgroundChange("background1"); setIsBgDropdownOpen(false); }}>
-                    <span className="italic">"Sketch of the Day"</span>
+                  <button
+                    onClick={() => {
+                      onBackgroundChange("background1");
+                      setIsBgDropdownOpen(false);
+                    }}
+                  >
+                    <span className="italic">"Golden Forest"</span>
                   </button>
                 </li>
                 <li>
                   <button
-                    onClick={() => { onBackgroundChange("lost_land_fairy_land"); setIsBgDropdownOpen(false); }}
+                    onClick={() => {
+                      onBackgroundChange("lost_land_fairy_land");
+                      setIsBgDropdownOpen(false);
+                    }}
                   >
                     <span className="italic">"Lost Land, Fairy Land"</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { onBackgroundChange("different_worlds"); setIsBgDropdownOpen(false);}}>
+                  <button
+                    onClick={() => {
+                      onBackgroundChange("different_worlds");
+                      setIsBgDropdownOpen(false);
+                    }}
+                  >
                     <span className="italic">"Different Worlds"</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { onBackgroundChange("A_Floating_City"); setIsBgDropdownOpen(false);}}>
+                  <button
+                    onClick={() => {
+                      onBackgroundChange("A_Floating_City");
+                      setIsBgDropdownOpen(false);
+                    }}
+                  >
                     <span className="italic">"A Floating City"</span>
                   </button>
                 </li>
                 <li>
-                  <button onClick={() => { onBackgroundChange("Quiet_Day"); setIsBgDropdownOpen(false);}}>
+                  <button
+                    onClick={() => {
+                      onBackgroundChange("Quiet_Day");
+                      setIsBgDropdownOpen(false);
+                    }}
+                  >
                     <span className="italic">"Quiet Day"</span>
                   </button>
                 </li>

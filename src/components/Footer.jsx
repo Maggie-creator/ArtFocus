@@ -36,9 +36,9 @@ const Footer = ({ artist, link }) => {
     <footer className="footer sticky sm:footer-horizontal text-neutral-content items-center p-4 bottom-0 left-0 w-full z-[9999] backdrop-blur-sm bg-neutral/60">
       <aside className="grid-flow-col items-center">
         <img
-          src="/icons/Artfocus_logo2.png"
+          src="/icons/ArtFocus_logo.png"
           alt="ArtFocus Logo"
-          className="h-10 ml-2 transition-transform hover:scale-105 hover:drop-shadow-lg"
+          className="h-12 ml-2 transition-transform hover:scale-105 hover:drop-shadow-lg"
         />
         <p>© {new Date().getFullYear()} Artfocus</p>
 
@@ -126,7 +126,9 @@ const Footer = ({ artist, link }) => {
                   className="flex flex-col gap-3 mt-4"
                 >
                   <div>
-                    <label htmlFor="name" className="sr-only">Your Name</label>
+                    <label htmlFor="name" className="sr-only">
+                      Your Name
+                    </label>
                     <input
                       type="text"
                       name="name"
@@ -139,7 +141,9 @@ const Footer = ({ artist, link }) => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="sr-only">Your Email</label>
+                    <label htmlFor="email" className="sr-only">
+                      Your Email
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -152,7 +156,9 @@ const Footer = ({ artist, link }) => {
                     />
                   </div>
                   <div>
-                    <label htmlFor="message" className="sr-only">Your Message</label>
+                    <label htmlFor="message" className="sr-only">
+                      Your Message
+                    </label>
                     <textarea
                       name="message"
                       id="message"

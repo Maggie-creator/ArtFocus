@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@plugin "daisyui" {
+  themes: dark --default, cupcake;
+}
+
 .react-grid-item>div {
   width: 100%;
   height: 100%;

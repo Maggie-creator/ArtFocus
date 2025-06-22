@@ -16,10 +16,10 @@ import Footer from "./components/Footer";
 const backgrounds = {
   background1: {
     image:
-      "https://cdna.artstation.com/p/assets/images/images/087/475/468/large/-0429.jpg?1745894356",
-    artist: "秋刀鱼",
-    link: "https://www.artstation.com/artwork/OvRX2v",
-    name: "Sketch of the Day",
+      "https://cdnb.artstation.com/p/assets/images/images/051/001/063/large/tyler-smith-aspenwoodsrender01.jpg?1656220912",
+    artist: "Tyler Smith",
+    link: "https://www.artstation.com/artwork/r9YPd5",
+    name: "Golden Forest",
   },
   lost_land_fairy_land: {
     image:

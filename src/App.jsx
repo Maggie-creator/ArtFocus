@@ -35,7 +35,7 @@ const backgrounds = {
     link: "https://www.artstation.com/artwork/rA6DB5",
     name: "Different Worlds",
   },
-  A_Floating_City: {
+  Good_Dog: {
     image:
       "https://cdna.artstation.com/p/assets/images/images/018/781/162/large/shuang-hao-6-11-2019.jpg?1560709816",
     artist: "Fran Hao Shuang",

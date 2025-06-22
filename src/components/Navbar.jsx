@@ -181,11 +181,11 @@ const Navbar = ({
                 <li>
                   <button
                     onClick={() => {
-                      onBackgroundChange("A_Floating_City");
+                      onBackgroundChange("Good_Dog");
                       setIsBgDropdownOpen(false);
                     }}
                   >
-                    <span className="italic">"A Floating City"</span>
+                    <span className="italic">"Good Dog"</span>
                   </button>
                 </li>
                 <li>
@@ -204,7 +204,7 @@ const Navbar = ({
 
           {/* 🔊 Sound Toggle Button */}
           <div
-            className="tooltip tooltip-bottom z-[9999]"
+            className="tooltip tooltip-bottom tooltip-secondary z-[9999]"
             data-tip={isSoundOn ? "Sound On" : "Sound Off"}
           >
             <button

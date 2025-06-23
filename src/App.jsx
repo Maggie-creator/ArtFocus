@@ -12,6 +12,7 @@ import Canvas from "./components/Canvas";
 import KanbanBoard from "./components/KanbanBoard";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 const backgrounds = {
   background1: {
@@ -255,6 +256,7 @@ const App = () => {
           link={currentBackground.link}
         />
       </div>
+      <Analytics />
     </div>
   );
 };
